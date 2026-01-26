@@ -1,0 +1,41 @@
+<script setup>
+import { ArrowLeft } from 'lucide-vue-next';
+</script>
+
+<template>
+    <div class="p-10 animate-in text-white fade-in duration-500">
+        <h1 class="text-3xl font-bold mt-5 ">Interviews</h1>
+        <p class="mt-4 text-slate-500 max-w-2xl">
+            You have been invited to complete the following interviews. Please follow the instructions below.
+        </p>
+
+        <div class="mt-10">
+            <h1 class="text-xl font-bold">Complete your recorded video interview</h1>
+            <p class="text-sm text-slate-500 mt-2 max-w-md leading-relaxed">
+                You need to complete a short video recording yourself answering some questions.
+                You can do this at a time that is convenient for you. Please have your passport ready.
+            </p>
+
+            <div
+                class="flex flex-col mt-8 max-w-lg gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl rounded-l-sm border-l-[6px] border-orange-500 shadow-sm">
+                <h2 class="text-lg font-bold">Credibility Interview</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm">
+                    You have been asked to complete a recorded video interviews.
+                </p>
+                <RouterLink to="/setup"
+                    class="w-fit px-8 py-2.5 bg-[#0070f3] hover:bg-blue-600 text-white font-semibold rounded-lg transition-all active:scale-95">
+                    Start interview
+                </RouterLink>
+            </div>
+        </div>
+
+        <div class="mt-12 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <button @click="setSection('documents')"
+                class="flex items-center gap-2 text-blue-500 font-medium hover:underline group">
+                <ArrowLeft class="group-hover:-translate-x-1 transition-transform" :size="18" />
+                Previous task: General Documents
+            </button>
+        </div>
+    </div>
+
+</template>

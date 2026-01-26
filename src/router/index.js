@@ -4,6 +4,7 @@ import Login from '@/components/Auth/Login.vue'
 import ChecklistView from '@/views/ChecklistView.vue'
 import Setup from '@/components/Interview/Setup.vue'
 import Questions from '@/components/Interview/Questions.vue'
+import Dashboard from '@/views/dashboard/Dashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,6 +13,11 @@ const router = createRouter({
       path: '/',
       name: 'login',
       component: HomeView,
+    },
+     {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: Dashboard,
     },
         {
       path: '/checklist',
