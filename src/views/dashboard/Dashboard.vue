@@ -2,44 +2,18 @@
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { List, FileText, Headphones } from "lucide-vue-next";
-
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const route = useRoute();
 const router = useRouter();
 
 const menuConfig = [
-    {
-        id: "checklist",
-        label: "CAS Checklist",
-        icon: List,
-        to: "/dashboard/checklist",
-        status: "Done",
-        statusClass: "bg-slate-800 text-cyan-500",
-    },
-    {
-        id: "documents",
-        label: "General Documents",
-        icon: FileText,
-        to: "/dashboard/documents",
-        status: "Done",
-        statusClass: "bg-slate-800 text-cyan-500",
-    },
-    {
-        id: "interviews",
-        label: "Interview",
-        icon: Headphones,
-        to: "/dashboard/interviews",
-        status: "New",
-        statusClass: "bg-blue-600 text-white",
-    },
+    { id: "checklist", label: "CAS Checklist", icon: List, to: "/dashboard/checklist", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
+    { id: "documents", label: "General Documents", icon: FileText, to: "/dashboard/documents", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
+    { id: "interviews", label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
 ];
 
-const activeId = computed(() => {
-    const last = route.path.split("/").filter(Boolean).pop();
-    return last || "interviews";
-});
-
+const activeId = computed(() => route.path.split("/").filter(Boolean).pop() || "interviews");
 const go = (to) => router.push(to);
 </script>
 
@@ -55,7 +29,7 @@ const go = (to) => router.push(to);
                 <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
                     activeId === item.id
                         ? 'bg-[#1e293b] text-white'
-                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200',
+                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
                 ]"
                     class="group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
                     <div class="flex items-center gap-4">
@@ -73,7 +47,8 @@ const go = (to) => router.push(to);
 
         <template #content>
             <Transition name="fade" mode="out-in">
-                <router-view :key="route.fullPath" />
+                <!-- THIS is the important part -->
+                <router-view />
             </Transition>
         </template>
     </DashboardLayout>
