@@ -35,9 +35,8 @@ const menuConfig = [
     },
 ];
 
-// ✅ active tab derived from route path (no local state to get stale)
 const activeId = computed(() => {
-    const last = route.path.split("/").filter(Boolean).pop(); // checklist/documents/interviews
+    const last = route.path.split("/").filter(Boolean).pop();
     return last || "interviews";
 });
 
@@ -74,7 +73,6 @@ const go = (to) => router.push(to);
 
         <template #content>
             <Transition name="fade" mode="out-in">
-                <!-- ✅ router controls the rendering; this WILL update without refresh -->
                 <router-view :key="route.fullPath" />
             </Transition>
         </template>
