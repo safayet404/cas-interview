@@ -1,53 +1,47 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { List, FileText, Headphones } from 'lucide-vue-next'; // Icons for the menu
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { List, FileText, Headphones } from "lucide-vue-next";
 
-// Individual Components
-import GeneralDocuments from './GeneralDocuments.vue';
-import CasChecklist from './CasChecklist.vue';
-import Interview from '@/components/Dashboard/Interview.vue';
+import DashboardLayout from "@/layouts/DashboardLayout.vue";
 
 const route = useRoute();
 const router = useRouter();
 
-// 1. Precise Menu Config with Icons and Status Colors
-const menuConfig = {
-    checklist: {
-        label: 'CAS Checklist',
-        component: CasChecklist,
+const menuConfig = [
+    {
+        id: "checklist",
+        label: "CAS Checklist",
         icon: List,
-        status: 'Done',
-        statusClass: 'bg-slate-800 text-cyan-500'
+        to: "/dashboard/checklist",
+        status: "Done",
+        statusClass: "bg-slate-800 text-cyan-500",
     },
-    documents: {
-        label: 'General Documents',
-        component: GeneralDocuments,
+    {
+        id: "documents",
+        label: "General Documents",
         icon: FileText,
-        status: 'Done',
-        statusClass: 'bg-slate-800 text-cyan-500'
+        to: "/dashboard/documents",
+        status: "Done",
+        statusClass: "bg-slate-800 text-cyan-500",
     },
-    interviews: {
-        label: 'Interview',
-        component: Interview,
+    {
+        id: "interviews",
+        label: "Interview",
         icon: Headphones,
-        status: 'New',
-        statusClass: 'bg-blue-600 text-white'
-    }
-};
+        to: "/dashboard/interviews",
+        status: "New",
+        statusClass: "bg-blue-600 text-white",
+    },
+];
 
-const activeTab = ref(route.query.tab || 'interviews');
-const currentComponent = computed(() => menuConfig[activeTab.value]?.component);
-
-const navigate = (tabId) => {
-    activeTab.value = tabId;
-    router.push({ query: { tab: tabId } });
-};
-
-watch(() => route.query.tab, (newTab) => {
-    if (newTab) activeTab.value = newTab;
+// ✅ active tab derived from route path (no local state to get stale)
+const activeId = computed(() => {
+    const last = route.path.split("/").filter(Boolean).pop(); // checklist/documents/interviews
+    return last || "interviews";
 });
+
+const go = (to) => router.push(to);
 </script>
 
 <template>
@@ -59,20 +53,20 @@ watch(() => route.query.tab, (newTab) => {
             </div>
 
             <nav class="flex flex-col gap-1 px-2">
-                <button v-for="(info, id) in menuConfig" :key="id" @click="navigate(id)" :class="[
-                    activeTab === id
+                <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
+                    activeId === item.id
                         ? 'bg-[#1e293b] text-white'
-                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
+                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200',
                 ]"
                     class="group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
                     <div class="flex items-center gap-4">
-                        <component :is="info.icon" :size="20" stroke-width="1.5" />
-                        <span class="text-[15px] font-medium">{{ info.label }}</span>
+                        <component :is="item.icon" :size="20" stroke-width="1.5" />
+                        <span class="text-[15px] font-medium">{{ item.label }}</span>
                     </div>
 
-                    <span :class="info.statusClass"
+                    <span :class="item.statusClass"
                         class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                        {{ info.status }}
+                        {{ item.status }}
                     </span>
                 </button>
             </nav>
@@ -80,7 +74,8 @@ watch(() => route.query.tab, (newTab) => {
 
         <template #content>
             <Transition name="fade" mode="out-in">
-                <component :is="currentComponent" />
+                <!-- ✅ router controls the rendering; this WILL update without refresh -->
+                <router-view :key="route.fullPath" />
             </Transition>
         </template>
     </DashboardLayout>

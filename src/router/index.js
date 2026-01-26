@@ -5,6 +5,10 @@ import ChecklistView from '@/views/ChecklistView.vue'
 import Setup from '@/components/Interview/Setup.vue'
 import Questions from '@/components/Interview/Questions.vue'
 import Dashboard from '@/views/dashboard/Dashboard.vue'
+import CasChecklist from '@/components/Dashboard/CasChecklist.vue'
+import GeneralDocuments from '@/components/Dashboard/GeneralDocuments.vue'
+import Interview from '@/components/Dashboard/Interview.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +21,14 @@ const router = createRouter({
      {
       path: '/dashboard',
       name: 'dashboard',
-      component: Dashboard,
+       component: Dashboard,
+       children: [
+             { path: "", redirect: "/dashboard/interviews" },
+
+         { path: "checklist", name: "dashboard-checklist", component: CasChecklist },
+      { path: "documents", name: "dashboard-documents", component: GeneralDocuments },
+      { path: "interviews", name: "dashboard-interviews", component: Interview },
+      ]
     },
         {
       path: '/checklist',
