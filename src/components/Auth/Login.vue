@@ -12,13 +12,13 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-gray-700">Email address</label>
-                        <input type="email"
+                        <input type="email" v-model="email"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-sm font-semibold text-gray-700">Password</label>
-                        <input type="password"
+                        <input type="password" v-model="password"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
 
@@ -35,3 +35,34 @@
         </div>
     </section>
 </template>
+
+<script setup>
+import { useAuthStore } from '@/stores/auth';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter()
+const auth = useAuthStore()
+
+const email = ref("")
+const password = ref("")
+const error = ref("")
+
+const handleLogin = async () => {
+    error.value = ""
+    try {
+        const res = await auth.login(email.value, password.value)
+
+        if (res.data.status === "success") {
+            router.push({ name: "dashboard" })
+        } else {
+            error.value = res.data.message || "login failed"
+        }
+    } catch (error) {
+        error.value = "Invalid credentials";
+
+    }
+}
+
+</script>
