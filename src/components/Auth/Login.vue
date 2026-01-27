@@ -22,7 +22,7 @@
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
 
-                    <button
+                    <button @click="handleLogin"
                         class="w-full bg-[#5D9CEC] hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-colors shadow-md mt-2">
                         Log in
                     </button>

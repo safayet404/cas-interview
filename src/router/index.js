@@ -27,7 +27,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
 
       children: [
-        { path: "", redirect: "/dashboard/interviews" },
+        { path: "", name: "dashboards", redirect: "/dashboard/interviews" },
 
         { path: "checklist", name: "dashboard-checklist", component: CasChecklist },
         { path: "documents", name: "dashboard-documents", component: GeneralDocuments },

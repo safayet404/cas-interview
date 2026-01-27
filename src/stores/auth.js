@@ -15,7 +15,8 @@ export const useAuthStore = defineStore("auth", {
     },
     actions: {
         async login(email, password) {
-            const res = await api.post("/student/login", { email, password })
+            const res = await api.post("/student-login", { email, password })
+            console.log("login", res);
 
             this.student = res.data.student
             this.checked = true
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore("auth", {
         },
         async fetchMe() {
             try {
-                const res = await api.get("/student/me");
+                const res = await api.get("/student-profile");
                 this.student = res.data.student;
             } catch (e) {
                 this.student = null;
