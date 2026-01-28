@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { List, FileText, Headphones } from "lucide-vue-next";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
+import { useAuthStore } from "@/stores/auth";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +14,22 @@ const menuConfig = [
     { id: "interviews", label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
 ];
 
+const auth = useAuthStore()
+
+const handleLogout = async () => {
+    await auth.logout()
+    router.replace({ name: "login" });
+}
+
+onMounted(async () => {
+    if (!auth.checked) {
+        await auth.fetchMe();
+    }
+
+})
+
+const helloName = computed(() => auth.fullName || "Student")
+
 const activeId = computed(() => route.path.split("/").filter(Boolean).pop() || "interviews");
 const go = (to) => router.push(to);
 </script>
@@ -20,29 +37,41 @@ const go = (to) => router.push(to);
 <template>
     <DashboardLayout>
         <template #sidebar>
-            <div class="text-center mb-10 pt-4">
-                <h1 class="text-2xl font-bold text-white tracking-tight">Shabuj Global</h1>
-                <h2 class="text-slate-500 font-medium mt-1">Hello Aleksandre</h2>
+            <div class="flex flex-col h-full">
+                <div class="text-center mb-10 pt-4 ">
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Shabuj Global</h1>
+                    <h2 class="text-slate-500 font-medium mt-1">Hello {{ helloName }}</h2>
+                </div>
+
+                <nav class="flex flex-col gap-1 px-2">
+                    <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
+                        activeId === item.id
+                            ? 'bg-[#1e293b] text-white'
+                            : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
+                    ]"
+                        class="group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
+                        <div class="flex items-center gap-4">
+                            <component :is="item.icon" :size="20" stroke-width="1.5" />
+                            <span class="text-[15px] font-medium">{{ item.label }}</span>
+                        </div>
+
+                        <span :class="item.statusClass"
+                            class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+                            {{ item.status }}
+                        </span>
+                    </button>
+                </nav>
+
+                <div class="flex flex-col gap-1 px-2 mt-auto">
+                    <h1 class="text-center text-white ">Student ID : 123456000</h1>
+
+                    <button @click="handleLogout"
+                        class="text-white self-center px-5 mt-3 bg-blue-500 py-2 rounded font-semibold ">
+                        Logout
+                    </button>
+                </div>
+
             </div>
-
-            <nav class="flex flex-col gap-1 px-2">
-                <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
-                    activeId === item.id
-                        ? 'bg-[#1e293b] text-white'
-                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
-                ]"
-                    class="group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
-                    <div class="flex items-center gap-4">
-                        <component :is="item.icon" :size="20" stroke-width="1.5" />
-                        <span class="text-[15px] font-medium">{{ item.label }}</span>
-                    </div>
-
-                    <span :class="item.statusClass"
-                        class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                        {{ item.status }}
-                    </span>
-                </button>
-            </nav>
         </template>
 
         <template #content>

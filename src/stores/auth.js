@@ -9,15 +9,12 @@ export const useAuthStore = defineStore("auth", {
 
     getters: {
         isLoggedIn: (state) => !!state.student,
-        fullName: (state) => {
-            state.student ? `${state.student.first_name} ${state.student.last_name}` : ""
-        }
+        fullName: (state) => state.student ? `${state.student.first_name} ${state.student.last_name}` : ""
+
     },
     actions: {
         async login(email, password) {
             const res = await api.post("/student-login", { email, password })
-            console.log("login", res);
-
             this.student = res.data.student
             this.checked = true
 
@@ -36,7 +33,8 @@ export const useAuthStore = defineStore("auth", {
 
         async logout() {
             try {
-                await api.post("/student/logout"); // create this route on backend
+                await api.post("/student-logout");
+
             } catch (e) {
                 // ignore
             }
