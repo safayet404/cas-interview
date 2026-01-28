@@ -23,7 +23,7 @@
                     </div>
 
                     <button @click="handleLogin"
-                        class="w-full bg-[#5D9CEC] hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-colors shadow-md mt-2">
+                        class="w-full bg-[#5D9CEC] cursor-pointer hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-colors shadow-md mt-2">
                         Log in
                     </button>
 

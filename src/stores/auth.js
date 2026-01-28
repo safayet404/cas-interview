@@ -9,6 +9,7 @@ export const useAuthStore = defineStore("auth", {
 
     getters: {
         isLoggedIn: (state) => !!state.student,
+        studentId: (state) => state.student?.id || null,
         fullName: (state) => state.student ? `${state.student.first_name} ${state.student.last_name}` : ""
 
     },

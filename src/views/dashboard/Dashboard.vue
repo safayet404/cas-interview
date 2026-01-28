@@ -63,10 +63,10 @@ const go = (to) => router.push(to);
                 </nav>
 
                 <div class="flex flex-col gap-1 px-2 mt-auto">
-                    <h1 class="text-center text-white ">Student ID : 123456000</h1>
+                    <h1 class="text-center text-white ">Student ID : {{ auth.studentId }}</h1>
 
                     <button @click="handleLogout"
-                        class="text-white self-center px-5 mt-3 bg-blue-500 py-2 rounded font-semibold ">
+                        class="text-white cursor-pointer self-center px-5 mt-3 bg-blue-500 py-2 rounded font-semibold ">
                         Logout
                     </button>
                 </div>

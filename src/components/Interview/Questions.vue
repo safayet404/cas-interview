@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { CheckCircle2, Play, Square, Video, Mic } from 'lucide-vue-next';
+import { useInterviewStore } from '@/stores/questions';
 
 // --- State Management ---
 const interviewStarted = ref(false);
@@ -11,8 +12,14 @@ const prepTimer = ref(0);
 const recordingTimer = ref(0);
 const videoElement = ref(null);
 let timerInterval = null;
+const qs = useInterviewStore()
 
-// --- Interview Data ---
+onMounted(async () => {
+    await qs.fetchQuestions();
+    console.log("Questions now loaded:", qs.questions);
+});
+console.log("qs", qs.questions);
+
 const questions = ref([
     {
         id: 1,
@@ -36,7 +43,6 @@ const questions = ref([
 
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value]);
 
-// --- Lifecycle & Camera ---
 onMounted(async () => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({
