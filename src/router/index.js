@@ -9,6 +9,8 @@ import CasChecklist from '@/components/Dashboard/CasChecklist.vue'
 import GeneralDocuments from '@/components/Dashboard/GeneralDocuments.vue'
 import Interview from '@/components/Dashboard/Interview.vue'
 import { useAuthStore } from '@/stores/auth'
+import Hello from '@/components/Admin Dashboard/Hello.vue'
+import AdminDashboard from '@/views/admin-dashboard/AdminDashboard.vue'
 
 
 const router = createRouter({
@@ -34,28 +36,14 @@ const router = createRouter({
         { path: "interviews", name: "dashboard-interviews", component: Interview },
       ]
     },
-    {
-      path: '/checklist',
-      name: 'checklist',
-      component: ChecklistView,
-      meta: { requiresAuth: true },
-
-    },
-    {
-      path: '/setup',
-      name: 'setup',
-      component: Setup,
-      meta: { requiresAuth: true },
-
-    },
 
     {
-      path: '/questions',
-      name: 'questions',
-      component: Questions,
-      meta: { requiresAuth: true },
+      path: '/admin-dashboard',
+      name: 'admin-dashboard',
+      component: AdminDashboard
 
-    },
+    }
+
 
   ],
 })

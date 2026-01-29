@@ -9,9 +9,11 @@ const route = useRoute();
 const router = useRouter();
 
 const menuConfig = [
-    { id: "checklist", label: "CAS Checklist", icon: List, to: "/dashboard/checklist", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
-    { id: "documents", label: "General Documents", icon: FileText, to: "/dashboard/documents", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
-    { id: "interviews", label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
+    { id: "checklist", label: "Create Student", icon: List, to: "/dashboard/checklist" },
+    { id: "documents", label: "General Documents", icon: FileText, to: "/dashboard/documents" },
+    { id: "interviews", label: "Interview", icon: Headphones, to: "/dashboard/interviews" },
+
+
 ];
 
 const auth = useAuthStore()
@@ -43,7 +45,7 @@ const go = (to) => router.push(to);
                     <h2 class="text-slate-500 font-medium mt-1">Hello {{ helloName }}</h2>
                 </div>
 
-                <nav class="flex flex-col gap-1 px-2">
+                <nav class="flex flex-col px-1">
                     <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
                         activeId === item.id
                             ? 'bg-[#1e293b] text-white'
@@ -55,16 +57,12 @@ const go = (to) => router.push(to);
                             <span class="text-[15px] font-medium">{{ item.label }}</span>
                         </div>
 
-                        <span :class="item.statusClass"
-                            class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                            {{ item.status }}
-                        </span>
+
                     </button>
                 </nav>
 
                 <div class="flex flex-col gap-1 px-2 mt-auto">
-                    <h1 class="text-center text-white "> {{ auth.userType === "student" ? 'Student' : "User" }} ID : {{
-                        auth.userId }}</h1>
+                    <h1 class="text-center text-white ">Student ID : {{ auth.studentId }}</h1>
 
                     <button @click="handleLogout"
                         class="text-white cursor-pointer self-center px-5 mt-3 bg-blue-500 py-2 rounded font-semibold ">
@@ -77,7 +75,7 @@ const go = (to) => router.push(to);
 
         <template #content>
             <Transition name="fade" mode="out-in">
-                <!-- THIS is the important part -->
+
                 <router-view />
             </Transition>
         </template>
