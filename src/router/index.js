@@ -1,16 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import Login from '@/components/Auth/Login.vue'
-import ChecklistView from '@/views/ChecklistView.vue'
-import Setup from '@/components/Interview/Setup.vue'
-import Questions from '@/components/Interview/Questions.vue'
 import Dashboard from '@/views/dashboard/Dashboard.vue'
 import CasChecklist from '@/components/Dashboard/CasChecklist.vue'
 import GeneralDocuments from '@/components/Dashboard/GeneralDocuments.vue'
 import Interview from '@/components/Dashboard/Interview.vue'
 import { useAuthStore } from '@/stores/auth'
-import Hello from '@/components/Admin Dashboard/Hello.vue'
-import AdminDashboard from '@/views/admin-dashboard/AdminDashboard.vue'
+
+import CreateStudent from '@/components/Admin Dashboard/CreateStudent.vue'
 
 
 const router = createRouter({
@@ -34,15 +30,21 @@ const router = createRouter({
         { path: "checklist", name: "dashboard-checklist", component: CasChecklist },
         { path: "documents", name: "dashboard-documents", component: GeneralDocuments },
         { path: "interviews", name: "dashboard-interviews", component: Interview },
+        { path: "create-student", name: "create-student", component: CreateStudent },
       ]
     },
 
     {
       path: '/admin-dashboard',
       name: 'admin-dashboard',
-      component: AdminDashboard
+      component: Dashboard,
+      meta: { requiresAuth: true },
 
-    }
+      children: [
+
+        { path: "create-student", name: "create-student", component: CreateStudent },
+      ]
+    },
 
 
   ],

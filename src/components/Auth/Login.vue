@@ -55,7 +55,11 @@ const handleLogin = async () => {
         const res = await auth.login(email.value, password.value)
 
         if (res.data.status === "success") {
-            router.push({ name: "dashboard" })
+            if (res.data.role === "Student") {
+                router.push({ name: "dashboard" })
+            } else {
+                router.push({ name: "admin-dashboard" })
+            }
         } else {
             error.value = res.data.message || "login failed"
         }

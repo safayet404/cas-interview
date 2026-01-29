@@ -9,9 +9,11 @@ const route = useRoute();
 const router = useRouter();
 
 const menuConfig = [
-    { id: "checklist", label: "CAS Checklist", icon: List, to: "/dashboard/checklist", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
-    { id: "documents", label: "General Documents", icon: FileText, to: "/dashboard/documents", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
-    { id: "interviews", label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
+    { id: "checklist", roles: ['Student'], label: "CAS Checklist", icon: List, to: "/dashboard/checklist", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
+    { id: "documents", roles: ['Student'], label: "General Documents", icon: FileText, to: "/dashboard/documents", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
+    { id: "interviews", roles: ['Student'], label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
+
+    { id: "create-student", roles: ['Admin'], label: "Create Studebt", icon: Headphones, to: "/admin-dashboard/create-student", },
 ];
 
 const auth = useAuthStore()
@@ -29,7 +31,13 @@ onMounted(async () => {
 })
 
 const helloName = computed(() => auth.fullName || "Student")
+const filteredMenu = computed(() => {
+    return menuConfig.filter(item => {
+        if (!item.roles) return true
 
+        return item.roles.includes(auth.userRole)
+    })
+})
 const activeId = computed(() => route.path.split("/").filter(Boolean).pop() || "interviews");
 const go = (to) => router.push(to);
 </script>
@@ -43,8 +51,8 @@ const go = (to) => router.push(to);
                     <h2 class="text-slate-500 font-medium mt-1">Hello {{ helloName }}</h2>
                 </div>
 
-                <nav class="flex flex-col gap-1 px-2">
-                    <button v-for="item in menuConfig" :key="item.id" type="button" @click="go(item.to)" :class="[
+                <nav class="flex flex-col px-1">
+                    <button v-for="item in filteredMenu" :key="item.id" type="button" @click="go(item.to)" :class="[
                         activeId === item.id
                             ? 'bg-[#1e293b] text-white'
                             : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
@@ -57,7 +65,7 @@ const go = (to) => router.push(to);
 
                         <span :class="item.statusClass"
                             class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                            {{ item.status }}
+                            {{ item?.status }}
                         </span>
                     </button>
                 </nav>
