@@ -5,7 +5,7 @@
             <slot name="sidebar"></slot>
         </aside>
 
-        <main class="col-span-4 bg-[#010617] p-12 overflow-y-auto">
+        <main class="col-span-4 bg-[#010617] overflow-y-auto custom-scrollbar">
             <slot name="content"></slot>
         </main>
 

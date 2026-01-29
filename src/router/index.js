@@ -7,6 +7,9 @@ import Interview from '@/components/Dashboard/Interview.vue'
 import { useAuthStore } from '@/stores/auth'
 
 import CreateStudent from '@/components/Admin Dashboard/CreateStudent.vue'
+import ChecklistView from '@/views/ChecklistView.vue'
+import Setup from '@/components/Interview/Setup.vue'
+import Questions from '@/components/Interview/Questions.vue'
 
 
 const router = createRouter({
@@ -32,6 +35,22 @@ const router = createRouter({
         { path: "interviews", name: "dashboard-interviews", component: Interview },
         { path: "create-student", name: "create-student", component: CreateStudent },
       ]
+    },
+    {
+      path: '/checklist',
+      name: 'checklist',
+      component: ChecklistView,
+    },
+    {
+      path: '/setup',
+      name: 'setup',
+      component: Setup,
+    },
+
+    {
+      path: '/questions',
+      name: 'questions',
+      component: Questions,
     },
 
     {
