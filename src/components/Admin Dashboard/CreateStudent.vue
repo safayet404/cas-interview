@@ -2,12 +2,19 @@
 import api from '@/services/api';
 import axios from 'axios';
 import { computed, ref } from 'vue';
+import vueFilePond from 'vue-filepond';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+
+
 
 const student = ref({
     first_name: '',
     last_name: '',
     email: '',
-    password: ''
+    password: '',
+    dob: ''
 });
 
 const profile = ref({
@@ -73,6 +80,35 @@ async function createProfile() {
     }
 }
 
+
+
+const FilePond = vueFilePond(FilePondPluginImagePreview);
+const pond = ref(null);
+const serverOptions = {
+    url: 'http://localhost:8000/', // Base URL is usually handled by your 'api' service, but FilePond needs a string or config
+    process: (fieldName, file, metadata, load, error, progress, abort) => {
+        const formData = new FormData();
+        formData.append('files[]', file, file.name);
+
+        // We use your existing 'api' instance to keep headers/interceptors
+        api.post(`/students/${studentId.value}/documents`, formData, {
+            onUploadProgress: (e) => {
+                progress(e.lengthComputable, e.loaded, e.total);
+            }
+        }).then(res => {
+            load(res.data);
+            alert('Upload successful!');
+        }).catch(err => {
+            error('Upload failed');
+        });
+
+        return {
+            abort: () => {
+                abort();
+            }
+        };
+    }
+};
 async function uploadDoc() {
     if (!docFile.value) return;
 
@@ -137,7 +173,7 @@ async function generateQuestions() {
 
 <template>
 
-    <div class=" h-screen  bg-[#F8F7FA]">
+    <div class=" min-h-screen  bg-[#F8F7FA]">
 
         <Head title="Student Create" />
 
@@ -148,67 +184,115 @@ async function generateQuestions() {
 
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col">
-                        <label class="mb-1 text-sm font-medium">First Name</label>
+                    <div class="flex  flex-col-reverse">
+
                         <input v-model="student.first_name" placeholder="First name"
-                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                            class="w-full peer rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                        <label class="mb-1 transition-colors peer-focus:text-[#7367F0] text-sm ">First
+                            Name</label>
                     </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 text-sm font-medium">Last Name</label>
+                    <div class="flex flex-col-reverse">
                         <input v-model="student.last_name" placeholder="Last name"
-                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                            class="w-full peer rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Last Name</label>
                     </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 text-sm font-medium">Email</label>
+                    <div class="flex flex-col-reverse">
                         <input v-model="student.email" type="email" autocomplete="off" placeholder="Email"
-                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                            class="w-full peer rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Email</label>
                     </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 text-sm font-medium">Password</label>
+                    <div class="flex flex-col-reverse">
                         <input v-model="student.password" autocomplete="new-password" type="password"
                             placeholder="Password"
-                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                            class="w-full peer rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Password</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse">
+                        <input v-model="student.dob" type="date" placeholder="Password"
+                            class="w-full peer rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Date of birth</label>
                     </div>
 
                 </div>
 
-                <button class="mt-3 rounded border px-3 py-2" @click="createStudent" :disabled="creatingStudent">
-                    Create Student
+                <button class="mt-3 rounded-lg shadow-2xl border cursor-pointer bg-[#7367F0] text-white px-3 py-2"
+                    @click="createStudent" :disabled="creatingStudent">
+                    Continue
                 </button>
 
                 <div v-if="studentId" class="mt-2 text-sm opacity-80">
                     Student ID: {{ studentId }}
                 </div>
             </div>
+            <!-- v-if="studentId && !profileId" -->
 
-            <div class="mb-4 rounded border p-4" v-if="studentId && !profileId">
-                <h2 class="mb-2 font-semibold">Compliance Packet</h2>
+            <div class="mb-4 rounded-xl p-4  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
+                <h2 class="mb-5 font-semibold">Compliance Packet</h2>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <input v-model="profile.institution" placeholder="Institution"
-                        class="col-span-2 rounded border p-2" />
-                    <input v-model="profile.program" placeholder="Program" class="col-span-2 rounded border p-2" />
-                    <input v-model="profile.intake" placeholder="intake" class="col-span-2 rounded border p-2" />
+                <div class="grid grid-cols-2 gap-2 space-y-3">
 
-                    <input v-model="profile.tuition_fee" type="number" placeholder="Tuition fee"
-                        class="rounded border p-2" />
-                    <input v-model="profile.scholarship" type="number" placeholder="Scholarship"
-                        class="rounded border p-2" />
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.institution" placeholder="Institution"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">University of Sunderland</label>
+                    </div>
 
-                    <input v-model="profile.paid_amount" type="number" placeholder="Paid Amount"
-                        class="rounded border p-2" />
-                    <input v-model="profile.remaining_amount" type="number" placeholder="Remaining Amount"
-                        class="rounded border p-2" />
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.program" placeholder="Computer Science and Engineering"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Program</label>
+                    </div>
 
-                    <textarea v-model="profile.notes" placeholder="Notes (Optional) "
-                        class="col-span-2 rounded border p-2"></textarea>
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.intake" placeholder="Intake"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">January 2026</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.tuition_fee" type="number" placeholder="1200"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Tuition fees</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.scholarship" type="number" placeholder="0"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Scholarship</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse">
+                        <input v-model="profile.paid_amount" type="number" placeholder="500"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Paid Amount</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse col-span-2">
+                        <input v-model="profile.remaining_amount" type="number" placeholder="2000"
+                            class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Remaining Amount</label>
+                    </div>
+
+                    <div class="flex flex-col-reverse col-span-2">
+                        <textarea v-model="profile.notes" placeholder="Notes (Optional)"
+                            class="w-full h-28 peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2"></textarea>
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Notes</label>
+                    </div>
+
+
+
+
+
+
                 </div>
 
-                <button class="mt-3 rounded border px-3 py-2" @click="createProfile" :disabled="creatingProfile">
-                    Save Compliance Packet
+                <button class="mt-3 rounded bg-[#7367F0] text-white px-3 py-2" @click="createProfile"
+                    :disabled="creatingProfile">
+                    Continue
                 </button>
 
                 <div v-if="profileId" class="mt-2 text-sm opacity-80">
@@ -216,7 +300,23 @@ async function generateQuestions() {
                 </div>
             </div>
 
-            <div class="mb-4 rounded border p-4" v-if="studentId && profileId">
+            <!-- v-if="studentId && profileId"  -->
+
+            <div class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] bg-white"
+                v-if="studentId && profileId">
+                <h2 class="mb-4 font-semibold text-gray-700">Upload Documents</h2>
+
+                <file-pond name="files" ref="pond"
+                    label-idle="Drop files here or <span class='filepond--label-action font-bold text-[#7367F0]'>Browse</span>"
+                    :allow-multiple="true" accepted-file-types="image/*, application/pdf" :server="serverOptions"
+                    class="cursor-pointer" />
+
+                <p class="mt-2 text-xs text-gray-400 italic">
+                    Supported formats: Images, PDF. Max files: 10.
+                </p>
+            </div>
+
+            <div class="mb-4 rounded border p-4">
                 <h2 class="mb-2 font-semibold">Upload Documents</h2>
 
                 <input type="file" @change="onFile" multiple />
@@ -258,3 +358,23 @@ async function generateQuestions() {
     </div>
 
 </template>
+
+<style lang="css">
+/* FilePond customization to match your #7367F0 theme */
+.filepond--panel-root {
+    background-color: #f8f9fa;
+    border: 2px dashed #d1d5db;
+}
+
+.filepond--item-panel {
+    background-color: #7367F0 !important;
+}
+
+.filepond--file-action-button {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.filepond--label-action {
+    text-decoration-color: #7367F0;
+}
+</style>
