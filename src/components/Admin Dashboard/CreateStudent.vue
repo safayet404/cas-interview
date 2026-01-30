@@ -137,24 +137,42 @@ async function generateQuestions() {
 
 <template>
 
-    <div class="grid grid-cols-4 h-screen overflow-hidden bg-white">
+    <div class=" h-screen  bg-[#F8F7FA]">
 
         <Head title="Student Create" />
 
-        <div class="max-w-3xl p-6  bg-white">
+        <div class=" p-6">
             <h1 class="mb-4 text-xl font-semibold">Student Setup</h1>
 
-            <div v-if="!studentId" class="mb-4 rounded border p-4">
-                <h2 class="mb-2 font-semibold">Student</h2>
+            <div v-if="!studentId" class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
 
-                <div class="grid grid-cols-2 gap-2">
-                    <input v-model="student.first_name" placeholder="First name" class="rounded border p-2" />
-                    <input v-model="student.last_name" placeholder="Last name" class="rounded border p-2" />
-                    <input v-model="student.email" type="email" placeholder="Email"
-                        class="col-span-2 rounded border p-2" />
 
-                    <input v-model="student.password" type="password" placeholder="password"
-                        class="col-span-2 rounded border p-2" />
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <label class="mb-1 text-sm font-medium">First Name</label>
+                        <input v-model="student.first_name" placeholder="First name"
+                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="mb-1 text-sm font-medium">Last Name</label>
+                        <input v-model="student.last_name" placeholder="Last name"
+                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="mb-1 text-sm font-medium">Email</label>
+                        <input v-model="student.email" type="email" autocomplete="off" placeholder="Email"
+                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="mb-1 text-sm font-medium">Password</label>
+                        <input v-model="student.password" autocomplete="new-password" type="password"
+                            placeholder="Password"
+                            class="w-full rounded border border-gray-400 p-2 outline-none focus:border-[#7367F0]" />
+                    </div>
+
                 </div>
 
                 <button class="mt-3 rounded border px-3 py-2" @click="createStudent" :disabled="creatingStudent">
