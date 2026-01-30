@@ -31,6 +31,8 @@ const profile = ref({
 const studentId = ref(null);
 const profileId = ref(null);
 
+const tab = ref("student")
+
 const interviewId = ref(null);
 const questions = ref([]);
 const docUploaded = ref(false)
@@ -53,6 +55,7 @@ async function createStudent() {
         console.log('student data ', data);
 
         studentId.value = data?.data.id;
+        tab.value = "compliance"
     } catch (error) {
         console.log(error);
     } finally {
@@ -70,6 +73,7 @@ async function createProfile() {
         console.log('complaince profile', data);
 
         profileId.value = data?.data.id;
+        tab.value = "doc"
     } catch (error) {
         console.log(error);
     } finally {
@@ -98,6 +102,7 @@ const serverOptions = {
             if (res.data.status === 'success') {
                 load(res.data)
                 docUploaded.value = true
+
             }
         } catch (error) {
             console.log("error", error);
@@ -111,10 +116,8 @@ const serverOptions = {
     }
 };
 
-const allInfoSubmitted = ref(false)
-
 function interviewSection() {
-    allInfoSubmitted.value = true
+    tab.value = "interview"
 }
 
 async function createInterview() {
@@ -127,6 +130,7 @@ async function createInterview() {
         });
         console.log('interview create', data);
         interviewId.value = data?.data.id;
+
     } catch (error) {
         console.log(error);
     } finally {
@@ -162,7 +166,8 @@ function resetForm() {
     profileId.value = null;
     interviewId.value = null;
     docUploaded.value = false;
-    allInfoSubmitted.value = false;
+
+    tab.value = "student"
 
     // 4. Reset FilePond (if instance exists)
     if (pond.value) {
@@ -179,6 +184,7 @@ async function generateQuestions() {
         console.log('generate questions', data);
         alert("Interview creation Complete!");
         resetForm();
+
 
     } catch (error) {
         console.log(error);
@@ -198,7 +204,7 @@ async function generateQuestions() {
         <div class=" p-6">
             <h1 class="mb-4 text-xl font-semibold">Student Setup</h1>
 
-            <div v-if="!studentId" class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
+            <div v-if="tab === 'student'" class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
 
 
                 <div class="grid grid-cols-2 gap-4">
@@ -248,7 +254,7 @@ async function generateQuestions() {
             </div>
             <!-- v-if="studentId && !profileId" -->
 
-            <div v-if="studentId && !profileId" class="mb-4 rounded-xl p-4  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
+            <div v-if="tab === 'compliance'" class="mb-4 rounded-xl p-4  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
                 <h2 class="mb-5 font-semibold">Compliance Packet</h2>
 
                 <div class="grid grid-cols-2 gap-2 space-y-3">
@@ -320,8 +326,7 @@ async function generateQuestions() {
 
             <!-- v-if="studentId && profileId"  -->
 
-            <div class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] bg-white"
-                v-if="profileId && !allInfoSubmitted">
+            <div class="mb-4 rounded-xl p-4 shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] bg-white" v-if="tab === 'doc'">
                 <h2 class="mb-4 font-semibold text-gray-700">Upload Documents</h2>
 
                 <file-pond name="files" ref="pond"
@@ -345,7 +350,7 @@ async function generateQuestions() {
 
 
 
-            <div v-if="profileId && allInfoSubmitted" class="rounded-xl  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] p-8">
+            <div v-if="tab === 'interview'" class="rounded-xl  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] p-8">
 
                 <div class="flex justify-center">
 
@@ -370,7 +375,6 @@ async function generateQuestions() {
 </template>
 
 <style lang="css">
-/* FilePond customization to match your #7367F0 theme */
 .filepond--panel-root {
     background-color: #f8f9fa;
     border: 2px dashed #d1d5db;
