@@ -14,14 +14,14 @@ const { createStudent, createProfile, createInterview, uploadDocumentAction, gen
 const FilePond = vueFilePond(FilePondPluginImagePreview);
 const pond = ref(null);
 const serverOptions = {
-    url: 'http://localhost:8000/',
+
     process: async (fieldName, file, metadata, load, error, progress, abort) => {
         const formData = new FormData();
         formData.append('files[]', file, file.name);
 
         try {
-            // Use the store action here!
-            const res = await store.uploadDocumentAction(formData, (e) => {
+
+            const res = await uploadDocumentAction(formData, (e) => {
                 progress(e.lengthComputable, e.loaded, e.total);
             });
 
@@ -91,7 +91,7 @@ function interviewSection() {
 
                 </div>
 
-                <button class="mt-3 rounded-lg shadow-2xl border cursor-pointer bg-[#7367F0] text-white px-3 py-2"
+                <button class="mt-3 rounded-lg shadow-2xl border  cursor-pointer bg-[#7367F0] text-white px-3 py-2"
                     @click="createStudent" :disabled="loading.student">
                     Continue
                 </button>
