@@ -1,198 +1,46 @@
 <script setup>
-import api from '@/services/api';
-import axios from 'axios';
-import { computed, ref } from 'vue';
+
+import { ref } from 'vue';
 import vueFilePond from 'vue-filepond';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import { useStudentStore } from '@/stores/student';
+import { storeToRefs } from 'pinia';
 
-
-
-const student = ref({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
-    dob: ''
-});
-
-const profile = ref({
-    institution: '',
-    program: '',
-    intake: '',
-    tuition_fee: 0,
-    scholarship: null,
-    paid_amount: 0,
-    remaining_amount: 0,
-    notes: '',
-});
-
-const studentId = ref(null);
-const profileId = ref(null);
-
-const tab = ref("student")
-
-const interviewId = ref(null);
-const questions = ref([]);
-const docUploaded = ref(false)
-
-const creatingStudent = ref(false);
-const creatingProfile = ref(false);
-const creatingInterview = ref(false);
-
-const questionsPreview = computed(() =>
-    questions.value.length ? JSON.stringify(questions.value, null, 2) : '',
-);
-
-
-
-async function createStudent() {
-    creatingStudent.value = true;
-
-    try {
-        const { data } = await api.post('/student', student.value);
-        console.log('student data ', data);
-
-        studentId.value = data?.data.id;
-        tab.value = "compliance"
-    } catch (error) {
-        console.log(error);
-    } finally {
-        creatingStudent.value = false;
-    }
-}
-
-async function createProfile() {
-    creatingProfile.value = true;
-    try {
-        const { data } = await api.post(
-            `/students/${studentId.value}/compliance-profiles`,
-            profile.value,
-        );
-        console.log('complaince profile', data);
-
-        profileId.value = data?.data.id;
-        tab.value = "doc"
-    } catch (error) {
-        console.log(error);
-    } finally {
-        creatingProfile.value = false;
-    }
-}
-
-
-
+const store = useStudentStore()
+const { student, studentId, profile, profileId, interviewId, tab, docUploaded, loading } = storeToRefs(store)
+const { createStudent, createProfile, createInterview, uploadDocumentAction, generateQuestions } = store
 const FilePond = vueFilePond(FilePondPluginImagePreview);
 const pond = ref(null);
 const serverOptions = {
     url: 'http://localhost:8000/',
     process: async (fieldName, file, metadata, load, error, progress, abort) => {
-
         const formData = new FormData();
         formData.append('files[]', file, file.name);
 
         try {
-            const res = await api.post(`/students/${studentId.value}/documents`, formData, {
-                onUploadProgress: (e) => {
-                    progress(e.lengthComputable, e.loaded, e.total);
-                }
-            })
+            // Use the store action here!
+            const res = await store.uploadDocumentAction(formData, (e) => {
+                progress(e.lengthComputable, e.loaded, e.total);
+            });
 
             if (res.data.status === 'success') {
-                load(res.data)
-                docUploaded.value = true
-
+                load(res.data);
+                docUploaded.value = true;
             }
-        } catch (error) {
-            console.log("error", error);
-
+        } catch (err) {
+            console.error("Upload error", err);
+            error('Upload failed');
         }
-        return {
-            abort: () => {
-                abort();
-            }
-        };
+
+        return { abort: () => abort() };
     }
 };
 
 function interviewSection() {
     tab.value = "interview"
 }
-
-async function createInterview() {
-    creatingInterview.value = true;
-
-    try {
-        const { data } = await api.post('/interviews', {
-            student_id: studentId.value,
-            compliance_profile_id: profileId.value,
-        });
-        console.log('interview create', data);
-        interviewId.value = data?.data.id;
-
-    } catch (error) {
-        console.log(error);
-    } finally {
-        creatingInterview.value = false;
-
-    }
-}
-
-function resetForm() {
-    // 1. Reset Student Object
-    student.value = {
-        first_name: '',
-        last_name: '',
-        email: '',
-        password: '',
-        dob: ''
-    };
-
-    // 2. Reset Profile Object
-    profile.value = {
-        institution: '',
-        program: '',
-        intake: '',
-        tuition_fee: 0,
-        scholarship: null,
-        paid_amount: 0,
-        remaining_amount: 0,
-        notes: '',
-    };
-
-    // 3. Reset Flow State
-    studentId.value = null;
-    profileId.value = null;
-    interviewId.value = null;
-    docUploaded.value = false;
-
-    tab.value = "student"
-
-    // 4. Reset FilePond (if instance exists)
-    if (pond.value) {
-        pond.value.removeFiles();
-    }
-}
-
-async function generateQuestions() {
-    try {
-        const { data } = await api.post(
-            `/interviews/${interviewId.value}/generate-questions`,
-            { count: 1 },
-        );
-        console.log('generate questions', data);
-        alert("Interview creation Complete!");
-        resetForm();
-
-
-    } catch (error) {
-        console.log(error);
-        alert("Failed to generate questions. Please check console.");
-    }
-}
-
-
 </script>
 
 <template>
@@ -244,7 +92,7 @@ async function generateQuestions() {
                 </div>
 
                 <button class="mt-3 rounded-lg shadow-2xl border cursor-pointer bg-[#7367F0] text-white px-3 py-2"
-                    @click="createStudent" :disabled="creatingStudent">
+                    @click="createStudent" :disabled="loading.student">
                     Continue
                 </button>
 
@@ -315,7 +163,7 @@ async function generateQuestions() {
                 </div>
 
                 <button class="mt-3 rounded bg-[#7367F0] text-white px-3 py-2" @click="createProfile"
-                    :disabled="creatingProfile">
+                    :disabled="loading.profile">
                     Continue
                 </button>
 
@@ -355,7 +203,7 @@ async function generateQuestions() {
                 <div class="flex justify-center">
 
                     <button v-if="!interviewId" class="rounded bg-[#7367F0]  text-white px-3 py-2"
-                        @click="createInterview" :disabled="creatingInterview">
+                        @click="createInterview" :disabled="loading.interview">
                         Create Interview
                     </button>
 
@@ -368,7 +216,7 @@ async function generateQuestions() {
 
             </div>
 
-            <pre class="mt-4 text-xs opacity-80"> {{ questionsPreview }} </pre>
+            <!-- <pre class="mt-4 text-xs opacity-80"> {{ questionsPreview }} </pre> -->
         </div>
     </div>
 
