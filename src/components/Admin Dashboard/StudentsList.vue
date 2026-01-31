@@ -5,7 +5,6 @@ import { onMounted, ref, watch } from 'vue';
 import { useStudentStore } from '@/stores/student';
 import { storeToRefs } from 'pinia';
 import { Check, CheckCheck, Cross, Eye, X } from 'lucide-vue-next';
-import { CanceledError } from 'axios';
 
 const store = useStudentStore()
 const { students, pagination, isFetching } = storeToRefs(store)
@@ -16,7 +15,9 @@ const headers = [
     { text: 'email', value: 'email' },
     { text: 'INSTITUTION', value: 'institution' },
     { text: 'Profile', value: 'profile' },
-    { text: 'ACTIONS', value: 'operation', width: 250 },
+    { text: 'Created At', value: 'created_at' },
+    { text: 'Counselor', value: 'counselor' },
+    { text: 'ACTIONS', value: 'operation', width: 50 },
 ];
 
 const serverOptions = ref({
@@ -50,6 +51,10 @@ onMounted(async () => {
                     <CheckCheck v-if="profiles[0]?.profile_id" class="text-green-500 font-bold" />
 
                     <X v-else class="w-5 h-5 text-red-700 font-bold" />
+                </template>
+                <template #item-counselor="{ profiles }">
+
+                    <p>{{ profiles[0]?.counselor_name || 'N/A' }} <br> {{ profiles[0]?.counselor_email || 'N/A' }} </p>
                 </template>
 
                 <template #item-operation="{ profiles }">
