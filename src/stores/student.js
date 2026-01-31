@@ -12,11 +12,18 @@ export const useStudentStore = defineStore('student', () => {
     const docUploaded = ref(false);
     const tab = ref("student");
 
-    // Fix: access .value before the property name
+    const students = ref([])
+    const pagination = ref({
+        current_page: 1,
+        last_page: 1,
+        total: 0
+    })
+    const isFetching = ref(false)
+
     const loading = ref({ student: false, profile: false, interview: false });
 
     async function createStudent() {
-        loading.value.student = true; // Corrected
+        loading.value.student = true;
         try {
             const { data } = await api.post('/student', student.value);
             studentId.value = data?.data.id;
@@ -24,12 +31,12 @@ export const useStudentStore = defineStore('student', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            loading.value.student = false; // Corrected
+            loading.value.student = false;
         }
     }
 
     async function createProfile() {
-        loading.value.profile = true; // Corrected
+        loading.value.profile = true;
         try {
             const { data } = await api.post(`/students/${studentId.value}/compliance-profiles`, profile.value);
             profileId.value = data?.data.id;
@@ -37,7 +44,7 @@ export const useStudentStore = defineStore('student', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            loading.value.profile = false; // Corrected
+            loading.value.profile = false;
         }
     }
 
@@ -48,7 +55,7 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     async function createInterview() {
-        loading.value.interview = true; // Corrected
+        loading.value.interview = true;
         try {
             const { data } = await api.post('/interviews', {
                 student_id: studentId.value,
@@ -58,7 +65,7 @@ export const useStudentStore = defineStore('student', () => {
         } catch (error) {
             console.error(error);
         } finally {
-            loading.value.interview = false; // Corrected
+            loading.value.interview = false;
         }
     }
 
@@ -73,6 +80,26 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
+    async function fetchStudents(page = 1) {
+        isFetching.value = true
+        try {
+            const { data } = await api.get(`/fetch-students?page=${page}`)
+            const paginateData = data[0]
+            students.value = paginateData.data
+            pagination.value = {
+                current_page: paginateData.current_page,
+                last_page: paginateData.last_page,
+                total: paginateData.total
+            }
+
+        } catch (error) {
+            console.log(error);
+
+        } finally {
+            isFetching.value = false
+        }
+    }
+
     function resetForm() {
         student.value = { first_name: '', last_name: '', email: '', password: '', dob: '' };
         profile.value = { institution: '', program: '', intake: '', tuition_fee: 0, scholarship: null, paid_amount: 0, remaining_amount: 0, notes: '' };
@@ -84,7 +111,7 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     return {
-        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading,
-        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm
+        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading, students, pagination, isFetching,
+        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm, fetchStudents
     };
 });
