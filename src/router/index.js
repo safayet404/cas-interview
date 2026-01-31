@@ -10,6 +10,7 @@ import CreateStudent from '@/components/Admin Dashboard/CreateStudent.vue'
 import ChecklistView from '@/views/ChecklistView.vue'
 import Setup from '@/components/Interview/Setup.vue'
 import Questions from '@/components/Interview/Questions.vue'
+import StudentsList from '@/components/Admin Dashboard/StudentsList.vue'
 
 
 const router = createRouter({
@@ -33,7 +34,6 @@ const router = createRouter({
         { path: "checklist", name: "dashboard-checklist", component: CasChecklist },
         { path: "documents", name: "dashboard-documents", component: GeneralDocuments },
         { path: "interviews", name: "dashboard-interviews", component: Interview },
-        { path: "create-student", name: "create-student", component: CreateStudent },
       ]
     },
     {
@@ -62,6 +62,7 @@ const router = createRouter({
       children: [
 
         { path: "create-student", name: "create-student", component: CreateStudent },
+        { path: "all-students", name: "all-students", component: StudentsList },
       ]
     },
 
