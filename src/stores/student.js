@@ -80,23 +80,28 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
-    async function fetchStudents(page = 1) {
-        isFetching.value = true
+    async function fetchStudents(page = 1, perPage = 10) {
+        isFetching.value = true;
         try {
-            const { data } = await api.get(`/fetch-students?page=${page}`)
-            const paginateData = data[0]
-            students.value = paginateData.data
+            const { data } = await api.get('/fetch-students', {
+                params: { page, per_page: perPage }
+            });
+
+
+            students.value = data.data;
+
             pagination.value = {
-                current_page: paginateData.current_page,
-                last_page: paginateData.last_page,
-                total: paginateData.total
-            }
+                current_page: data.meta.current_page,
+                last_page: data.meta.last_page,
+                total: data.meta.total,
+                per_page: data.meta.per_page
+            };
 
+            return data;
         } catch (error) {
-            console.log(error);
-
+            console.error("Fetch Error:", error);
         } finally {
-            isFetching.value = false
+            isFetching.value = false;
         }
     }
 

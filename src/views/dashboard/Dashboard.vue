@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { List, FileText, Headphones } from "lucide-vue-next";
+import { List, FileText, Headphones, PersonStanding, Pen } from "lucide-vue-next";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useAuthStore } from "@/stores/auth";
 
@@ -13,7 +13,8 @@ const menuConfig = [
     { id: "documents", roles: ['Student'], label: "General Documents", icon: FileText, to: "/dashboard/documents", status: "Done", statusClass: "bg-slate-800 text-cyan-500" },
     { id: "interviews", roles: ['Student'], label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
 
-    { id: "create-student", roles: ['Admin'], label: "Create Studebt", icon: Headphones, to: "/admin-dashboard/create-student", },
+    { id: "create-student", roles: ['Admin'], label: "New Record", icon: Pen, to: "/admin-dashboard/create-student", },
+    { id: "all-students", roles: ['Admin'], label: "Create Studebt", icon: PersonStanding, to: "/admin-dashboard/all-students", },
 ];
 
 const auth = useAuthStore()
