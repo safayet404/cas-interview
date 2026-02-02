@@ -5,13 +5,15 @@ import vueFilePond from 'vue-filepond';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginPdfPreview from 'filepond-plugin-pdf-preview';
+import 'filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.min.css';
 import { useStudentStore } from '@/stores/student';
 import { storeToRefs } from 'pinia';
 
 const store = useStudentStore()
 const { student, studentId, profile, profileId, interviewId, tab, docUploaded, loading } = storeToRefs(store)
 const { createStudent, createProfile, createInterview, uploadDocumentAction, generateQuestions } = store
-const FilePond = vueFilePond(FilePondPluginImagePreview);
+const FilePond = vueFilePond(FilePondPluginImagePreview, FilePondPluginPdfPreview);
 const pond = ref(null);
 const serverOptions = {
 
@@ -179,7 +181,7 @@ function interviewSection() {
 
                 <file-pond name="files" ref="pond"
                     label-idle="Drop files here or <span class='filepond--label-action font-bold text-[#7367F0]'>Browse</span>"
-                    :allow-multiple="true" accepted-file-types="image/*, application/pdf" :server="serverOptions"
+                    :allow-multiple="true" accepted-file-types="image/*, application/pdf,.docx" :server="serverOptions"
                     class="cursor-pointer" />
 
                 <p class="mt-2 text-xs text-gray-400 italic">
@@ -234,6 +236,16 @@ function interviewSection() {
 
 .filepond--file-action-button {
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+[data-filepond-item-state='processing-complete'] .filepond--item-panel {
+    background-color: #28c76f !important;
+    /* Success Green */
+}
+
+[data-filepond-item-state='processing-complete'] .filepond--file-wrapper {
+    border: 2px solid #28c76f;
+    border-radius: 8px;
 }
 
 .filepond--label-action {

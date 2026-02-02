@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 export const useStudentStore = defineStore('student', () => {
     const student = ref({ first_name: '', last_name: '', email: '', password: '', dob: '' });
-    const profile = ref({ institution: '', program: '', intake: '', tuition_fee: 0, scholarship: null, paid_amount: 0, remaining_amount: 0, notes: '' });
+    const profile = ref({ institution: '', program: '', intake: '', tuition_fee: '', scholarship: null, paid_amount: 0, remaining_amount: 0, notes: '' });
 
     const studentId = ref(null);
     const profileId = ref(null);

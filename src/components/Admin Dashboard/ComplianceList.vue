@@ -83,7 +83,7 @@ onMounted(async () => {
 
         <Teleport to="body">
             <Transition name="fade">
-                <div v-if="isDrawerOpen" class="fixed inset-0 z-[100] flex justify-end">
+                <div v-if="isDrawerOpen" class="fixed inset-0 z-100 flex justify-end">
                     <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
                         @click="closeDrawer()">
                     </div>
@@ -93,7 +93,7 @@ onMounted(async () => {
                             class="relative w-screen max-w-4xl bg-white shadow-2xl flex flex-col h-full">
 
                             <div
-                                class="relative bg-gradient-to-br from-indigo-700 via-indigo-800 to-violet-900 px-8 py-10 text-white shadow-lg">
+                                class="relative bg-linear-to-br from-indigo-700 via-indigo-800 to-violet-900 px-8 py-10 text-white shadow-lg">
                                 <button @click="closeDrawer()"
                                     class="absolute cursor-pointer top-6 right-6 p-2 rounded-full hover:bg-white/20 transition-all border border-white/10">
                                     <X :size="24" />
@@ -147,7 +147,7 @@ onMounted(async () => {
                                                     {{ label }}</p>
                                                 <p class="text-gray-900 font-bold text-sm leading-snug">{{
                                                     selectedProfile[key]
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                         </div>
 
@@ -166,14 +166,14 @@ onMounted(async () => {
                                                     Paid</p>
                                                 <p class="text-xl font-black text-emerald-700">${{
                                                     selectedProfile.paid_amount
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                             <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100 shadow-inner">
                                                 <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance
                                                     Due</p>
                                                 <p class="text-xl font-black text-rose-700">${{
                                                     selectedProfile.remaining_amount
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +194,7 @@ onMounted(async () => {
                                                     formatLocalTime(doc.uploaded_at) }}</p>
                                         </div>
                                         <button @click="openPreview(doc.url, doc.file_type)"
-                                            class="ml-2 px-4 py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">
+                                            class="ml-2 px-4 cursor-pointer py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">
                                             View
                                         </button>
                                     </div>
@@ -215,7 +215,7 @@ onMounted(async () => {
                                     <div v-for="(interview, index) in selectedProfile?.interviews" :key="interview.id"
                                         class="relative pl-10 border-l-2 border-indigo-100 pb-2 last:pb-0">
                                         <div
-                                            class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
+                                            class="absolute -left-2.75 top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
                                         </div>
 
                                         <div
@@ -240,7 +240,7 @@ onMounted(async () => {
                                                 <div v-for="(q, qIndex) in interview.questions" :key="q.id"
                                                     class="flex gap-5">
                                                     <div
-                                                        class="flex-shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black border border-indigo-100 shadow-sm">
+                                                        class="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black border border-indigo-100 shadow-sm">
                                                         {{ qIndex + 1 }}
                                                     </div>
                                                     <div class="flex-1">
@@ -269,7 +269,7 @@ onMounted(async () => {
         </Teleport>
         <Teleport to="body">
             <Transition name="fade">
-                <div v-if="isPreviewOpen" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-10">
+                <div v-if="isPreviewOpen" class="fixed inset-0 z-200 flex items-center justify-center p-4 md:p-10">
                     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closePreview"></div>
 
                     <div
@@ -290,6 +290,13 @@ onMounted(async () => {
 
                             <iframe v-else-if="previewType.includes('pdf')" :src="previewUrl"
                                 class="w-full h-full rounded-md shadow-lg"></iframe>
+
+
+                            <iframe v-else-if="previewType.includes('officedocument')"
+                                :src="`https://docs.google.com/gview?url=${previewUrl}&embedded=true`"
+                                class="w-full h-full">
+                            </iframe>
+
 
                             <div v-else class="text-center">
                                 <p class="text-gray-500">Preview not available for this file type.</p>

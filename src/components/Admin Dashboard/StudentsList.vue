@@ -88,7 +88,7 @@ onMounted(async () => {
 
         <Teleport to="body">
             <Transition name="fade">
-                <div v-if="isDrawerOpen" class="fixed inset-0 z-[100]">
+                <div v-if="isDrawerOpen" class="fixed inset-0 z-100">
                     <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
                         @click="closeDrawer()">
                     </div>
@@ -98,7 +98,7 @@ onMounted(async () => {
                             <div v-if="isDrawerOpen" class="w-screen max-w-5xl bg-white shadow-2xl flex flex-col">
 
                                 <div
-                                    class="relative bg-gradient-to-r from-indigo-700 to-violet-800 px-6 py-10 text-white">
+                                    class="relative bg-linear-to-r from-indigo-700 to-violet-800 px-6 py-10 text-white">
                                     <button @click="closeDrawer()"
                                         class="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-all">
                                         <X :size="24" />
@@ -166,12 +166,12 @@ onMounted(async () => {
                                                 <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
                                                     <p class="text-[10px] text-gray-500 font-bold mb-1">TUITION</p>
                                                     <p class="text-sm font-black text-gray-900">${{ profile.tuition_fee
-                                                    }}</p>
+                                                        }}</p>
                                                 </div>
                                                 <div class="p-3 rounded-xl bg-green-50 border border-green-100">
                                                     <p class="text-[10px] text-green-600 font-bold mb-1">PAID</p>
                                                     <p class="text-sm font-black text-green-700">${{ profile.paid_amount
-                                                    }}</p>
+                                                        }}</p>
                                                 </div>
                                                 <div class="p-3 rounded-xl bg-red-50 border border-red-100">
                                                     <p class="text-[10px] text-red-500 font-bold mb-1">BALANCE</p>
@@ -214,7 +214,7 @@ onMounted(async () => {
                                             class="relative pl-8 border-l-2 border-indigo-100 pb-4 last:pb-0">
 
                                             <div
-                                                class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-600 border-4 border-white shadow-sm">
+                                                class="absolute -left-2.25 top-0 w-4 h-4 rounded-full bg-indigo-600 border-4 border-white shadow-sm">
                                             </div>
 
                                             <div
@@ -222,7 +222,7 @@ onMounted(async () => {
                                                 <div
                                                     class="px-5 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
                                                     <h4 class="text-sm font-bold text-gray-700">Interview #{{ index + 1
-                                                    }}</h4>
+                                                        }}</h4>
                                                     <div class="flex items-center gap-3">
                                                         <span class="text-[10px] text-gray-400 font-bold uppercase">{{
                                                             formatLocalTime(interview.created_at) }}</span>
@@ -237,7 +237,7 @@ onMounted(async () => {
                                                     <div v-for="(q, qIndex) in interview.questions" :key="q.id"
                                                         class="flex gap-4">
                                                         <div
-                                                            class="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">
+                                                            class="shrink-0 w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">
                                                             Q{{ qIndex + 1 }}
                                                         </div>
                                                         <div class="flex-1">
