@@ -35,18 +35,23 @@ export const useProfileStore = defineStore('profile', () => {
     function openPreview(url, type) {
         const backendBase = "http://127.0.0.1:8000";
 
-        // FIX: Access refs directly and use .value
         previewUrl.value = `${backendBase}/storage/${url}`;
         previewType.value = type;
         isPreviewOpen.value = true;
 
-        console.log("Loading Image From:", previewUrl.value);
     }
+
+    function openProfileDrawer(profile) {
+        selectedProfile.value = profile;
+        isDrawerOpen.value = true;
+        profileId.value = profile.id;
+        studentId.value = profile.student?.student_id;
+    }
+
 
     function closeDrawer() {
         isDrawerOpen.value = false;
 
-        // FIX: Do NOT use ref() here. Just update the value.
         activeTab.value = 'profile';
 
         setTimeout(() => {
@@ -83,27 +88,7 @@ export const useProfileStore = defineStore('profile', () => {
         }
     }
 
-    function openProfileDrawer(profile) {
-        selectedProfile.value = profile;
-        isDrawerOpen.value = true;
-        activeTab.value = 'profile';
 
-        profileId.value = profile.id;
-        studentId.value = profile.student?.student_id;
-    }
-
-    function closeDrawer() {
-        isDrawerOpen.value = false;
-        activeTab = ref('profile');
-        setTimeout(() => {
-            if (!isDrawerOpen.value) {
-                selectedProfile.value = null;
-                profileId.value = null;
-                studentId.value = null;
-
-            }
-        }, 300);
-    }
 
 
 
