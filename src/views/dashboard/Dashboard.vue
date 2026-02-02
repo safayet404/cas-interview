@@ -14,7 +14,7 @@ const menuConfig = [
     { id: "interviews", roles: ['Student'], label: "Interview", icon: Headphones, to: "/dashboard/interviews", status: "New", statusClass: "bg-blue-600 text-white" },
 
     { id: "create-student", roles: ['Admin'], label: "New Record", icon: Pen, to: "/admin-dashboard/create-student", },
-    { id: "all-students", roles: ['Admin'], label: "Create Studebt", icon: PersonStanding, to: "/admin-dashboard/all-students", },
+    { id: "all-students", roles: ['Admin'], label: "Record List", icon: PersonStanding, to: "/admin-dashboard/all-students", },
 ];
 
 const auth = useAuthStore()

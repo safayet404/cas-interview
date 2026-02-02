@@ -159,7 +159,7 @@ onUnmounted(() => {
                                 <div class="flex items-center gap-3 truncate">
                                     <Video :size="16" class="text-slate-400" />
                                     <span class="truncate">{{ device.label || 'Camera ' + device.deviceId.slice(0, 4)
-                                        }}</span>
+                                    }}</span>
                                 </div>
 
                                 <Check v-if="activeCameraId === device.deviceId" :size="16" class="text-white" />
@@ -176,7 +176,7 @@ onUnmounted(() => {
                                     <Mic :size="16" class="text-slate-400" />
                                     <span class="truncate">{{ device.label || 'Microphone ' + device.deviceId.slice(0,
                                         4)
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <Check v-if="activeMicId === device.deviceId" :size="16" class="text-white" />
                             </button>

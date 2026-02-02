@@ -12,6 +12,10 @@ export const useStudentStore = defineStore('student', () => {
     const docUploaded = ref(false);
     const tab = ref("student");
 
+    const selectedStudent = ref(null);
+    const isDrawerOpen = ref(false);
+
+
     const students = ref([])
     const pagination = ref({
         current_page: 1,
@@ -21,6 +25,17 @@ export const useStudentStore = defineStore('student', () => {
     const isFetching = ref(false)
 
     const loading = ref({ student: false, profile: false, interview: false });
+
+    function openStudentDrawer(student) {
+        selectedStudent.value = student
+        isDrawerOpen.value = true
+    }
+
+    function closeDrawer() {
+        isDrawerOpen.value = false
+
+        setTimeout(() => { if (!isDrawerOpen.value) selectedStudent.value = null; }, 300);
+    }
 
     async function createStudent() {
         loading.value.student = true;
@@ -116,7 +131,7 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     return {
-        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading, students, pagination, isFetching,
-        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm, fetchStudents
+        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading, students, pagination, isFetching, selectedStudent, isDrawerOpen,
+        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm, fetchStudents, closeDrawer, openStudentDrawer
     };
 });
