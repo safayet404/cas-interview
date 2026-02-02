@@ -1,5 +1,5 @@
 <template>
-    <div class="text-white">
+    <div class="text-white p-4">
         <h1 class="text-5xl font-bold">General Documents</h1>
         <p class="text-slate-100 mt-6 leading-relaxed w-md">Below is a list of academic,travel and other documents
             associated with

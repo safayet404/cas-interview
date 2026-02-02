@@ -11,12 +11,12 @@ const { students, pagination, isFetching } = storeToRefs(store)
 const { fetchStudents } = store
 const headers = [
     { text: 'ID', value: 'id', sortable: true },
-    { text: 'NAME', value: 'full_name', sortable: true },
-    { text: 'email', value: 'email' },
-    { text: 'INSTITUTION', value: 'institution' },
+    { text: 'NAME', value: 'student_details' },
+
+    { text: 'University/Course', value: 'details' },
     { text: 'Profile', value: 'profile' },
-    { text: 'Created At', value: 'created_at' },
     { text: 'Counselor', value: 'counselor' },
+    { text: 'Created At', value: 'created_at' },
     { text: 'ACTIONS', value: 'operation', width: 50 },
 ];
 
@@ -43,8 +43,18 @@ onMounted(async () => {
             <EasyDataTable v-model:server-options="serverOptions" :server-items-length="pagination.total"
                 :loading="isFetching" :headers="headers" :items="students" buttons-pagination
                 table-class-name="customize-table" class="rounded-lg shadow-md">
-                <template #item-institution="{ profiles }">
-                    {{ profiles[0]?.institution || 'N/A' }}
+                <template #item-student_details="{ full_name, email }">
+                    <div>
+
+                        {{ full_name || 'N/A' }} <br>
+                        {{ email || 'N/A' }}
+                    </div>
+                </template>
+
+                <template #item-details="{ profiles }">
+                    {{ profiles[0]?.institution || 'N/A' }} <br>
+                    {{ profiles[0]?.intake || 'N/A' }} <br>
+                    {{ profiles[0]?.program || 'N/A' }}
                 </template>
                 <template #item-profile="{ profiles }">
 
