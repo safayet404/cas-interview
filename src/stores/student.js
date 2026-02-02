@@ -120,6 +120,8 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
+
+
     function resetForm() {
         student.value = { first_name: '', last_name: '', email: '', password: '', dob: '' };
         profile.value = { institution: '', program: '', intake: '', tuition_fee: 0, scholarship: null, paid_amount: 0, remaining_amount: 0, notes: '' };

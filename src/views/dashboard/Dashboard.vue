@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { List, FileText, Headphones, PersonStanding, Pen } from "lucide-vue-next";
+import { List, FileText, Headphones, PersonStanding, Pen, Paperclip } from "lucide-vue-next";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useAuthStore } from "@/stores/auth";
 
@@ -15,6 +15,7 @@ const menuConfig = [
 
     { id: "create-student", roles: ['Admin'], label: "New Record", icon: Pen, to: "/admin-dashboard/create-student", },
     { id: "all-students", roles: ['Admin'], label: "Record List", icon: PersonStanding, to: "/admin-dashboard/all-students", },
+    { id: "all-compliance", roles: ['Admin'], label: "Compliance List", icon: Paperclip, to: "/admin-dashboard/all-compliance", },
 ];
 
 const auth = useAuthStore()
@@ -58,7 +59,7 @@ const go = (to) => router.push(to);
                             ? 'bg-[#1e293b] text-white'
                             : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
                     ]"
-                        class="group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
+                        class="group cursor-pointer flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 w-full">
                         <div class="flex items-center gap-4">
                             <component :is="item.icon" :size="20" stroke-width="1.5" />
                             <span class="text-[15px] font-medium">{{ item.label }}</span>

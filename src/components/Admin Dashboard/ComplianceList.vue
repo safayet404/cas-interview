@@ -1,0 +1,312 @@
+<script setup>
+import { onMounted, ref, watch } from 'vue';
+import { useProfileStore } from '@/stores/compliance'; // Updated to Profile Store
+import { storeToRefs } from 'pinia';
+import {
+    CheckCheck, X, Eye, Mail, GraduationCap,
+    FileText, Calendar, Wallet, Info, User
+} from 'lucide-vue-next';
+import { formatLocalTime } from '@/utils/formatLocalTime';
+
+const store = useProfileStore();
+// Destructuring the new state structure
+const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen } = storeToRefs(store);
+const { fetchCompliance, openProfileDrawer, closeDrawer } = store;
+
+const activeTab = ref('profile');
+
+const headers = [
+    { text: 'ID', value: 'id', sortable: true },
+    { text: 'Student', value: 'student_info' },
+    { text: 'University/Program/Intake', value: 'program_info' },
+    { text: 'Counselor', value: 'counselor_name' },
+    { text: 'Created At', value: 'created' },
+    { text: 'ACTIONS', value: 'operation', width: 80 },
+];
+
+const serverOptions = ref({
+    page: 1,
+    rowsPerPage: 10,
+});
+
+watch(serverOptions, (value) => {
+    fetchCompliance(value.page, value.rowsPerPage);
+}, { deep: true });
+
+onMounted(async () => {
+    await fetchCompliance(serverOptions.value.page, serverOptions.value.rowsPerPage);
+});
+</script>
+
+<template>
+    <div class="min-h-screen bg-[#F8F7FA] p-4 font-sans">
+
+        <Head title="Compliance Profiles" />
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <EasyDataTable v-model:server-options="serverOptions" :server-items-length="pagination.total"
+                :loading="isFetching" :headers="headers" :items="profiles" buttons-pagination
+                table-class-name="customize-table">
+                <template #item-student_info="{ student }">
+                    <div class="py-3">
+                        <p class="font-bold text-gray-800 leading-tight">{{ student?.full_name || 'N/A' }}</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">{{ student?.email || 'N/A' }}</p>
+                    </div>
+                </template>
+
+                <template #item-program_info="{ program, intake, institution }">
+                    <div class="text-xs">
+                        <p class="font-semibold text-indigo-500">{{ institution }}</p>
+                        <p class="font-semibold text-gray-700">{{ program }}</p>
+                        <p class=" font-medium">{{ intake }}</p>
+                    </div>
+                </template>
+
+                <template #item-created="{ created_at }">
+                    <p class="text-[11px] text-gray-500"> {{ formatLocalTime(created_at) }} </p>
+                </template>
+
+                <template #item-operation="item">
+                    <button @click="openProfileDrawer(item)"
+                        class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                        <Eye :size="18" />
+                    </button>
+                </template>
+            </EasyDataTable>
+        </div>
+
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="isDrawerOpen" class="fixed inset-0 z-[100] flex justify-end">
+                    <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
+                        @click="closeDrawer()">
+                    </div>
+
+                    <Transition name="slide">
+                        <div v-if="isDrawerOpen"
+                            class="relative w-screen max-w-5xl bg-white shadow-2xl flex flex-col h-full">
+
+                            <div
+                                class="relative bg-gradient-to-br from-indigo-700 via-indigo-800 to-violet-900 px-8 py-10 text-white shadow-lg">
+                                <button @click="closeDrawer()"
+                                    class="absolute top-6 right-6 p-2 rounded-full hover:bg-white/20 transition-all border border-white/10">
+                                    <X :size="24" />
+                                </button>
+                                <div class="flex items-center gap-6">
+                                    <div
+                                        class="h-20 w-20 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl font-black border border-white/20 shadow-inner">
+                                        {{ selectedProfile?.student?.full_name?.charAt(0) }}
+                                    </div>
+                                    <div>
+                                        <h2 class="text-3xl font-extrabold tracking-tight uppercase">
+                                            {{ selectedProfile?.student?.full_name }}
+                                        </h2>
+                                        <div class="flex flex-wrap items-center gap-4 mt-2 text-indigo-100">
+                                            <p class="flex items-center gap-2 text-sm">
+                                                <Mail :size="16" /> {{ selectedProfile?.student?.email }}
+                                            </p>
+                                            <p class="flex items-center gap-2 text-sm">
+                                                <GraduationCap :size="16" /> ID: {{ selectedProfile?.id }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex border-b border-gray-100 px-8 sticky top-0 bg-white z-10 shadow-sm">
+                                <button v-for="tab in ['profile', 'documents', 'interviews']" :key="tab"
+                                    @click="activeTab = tab"
+                                    :class="[activeTab === tab ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600', 'py-5 border-b-2 font-black text-[11px] uppercase tracking-[0.2em] mr-10 transition-all']">
+                                    {{ tab }}
+                                </button>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto p-8 bg-gray-50/40">
+
+                                <div v-if="activeTab === 'profile'"
+                                    class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                                        <div class="flex items-center gap-3 text-indigo-700 font-bold mb-8">
+                                            <div class="p-2 bg-indigo-50 rounded-lg">
+                                                <GraduationCap :size="22" />
+                                            </div>
+                                            <span class="text-lg tracking-tight">University Application Summary</span>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                            <div v-for="(label, key) in { institution: 'Institution', program: 'Program', intake: 'Intake Period', counselor_name: 'Assigned Counselor' }"
+                                                :key="key">
+                                                <p
+                                                    class="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">
+                                                    {{ label }}</p>
+                                                <p class="text-gray-900 font-bold text-sm leading-snug">{{
+                                                    selectedProfile[key]
+                                                    }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="mt-10 pt-8 border-t border-gray-50 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div class="p-5 rounded-2xl bg-gray-50 border border-gray-100 shadow-inner">
+                                                <p class="text-[10px] text-gray-400 font-black mb-1 uppercase">Tuition
+                                                    Fee</p>
+                                                <p class="text-xl font-black text-gray-900">${{
+                                                    selectedProfile.tuition_fee }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-inner">
+                                                <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">Total
+                                                    Paid</p>
+                                                <p class="text-xl font-black text-emerald-700">${{
+                                                    selectedProfile.paid_amount
+                                                    }}</p>
+                                            </div>
+                                            <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100 shadow-inner">
+                                                <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance
+                                                    Due</p>
+                                                <p class="text-xl font-black text-rose-700">${{
+                                                    selectedProfile.remaining_amount
+                                                    }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div v-if="activeTab === 'documents'"
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in duration-300">
+                                    <div v-for="doc in selectedProfile?.documents" :key="doc.id"
+                                        class="flex items-center p-5 bg-white rounded-2xl border border-gray-100 hover:border-indigo-300 transition-all group shadow-sm">
+                                        <div
+                                            class="p-4 bg-indigo-50 text-indigo-600 rounded-xl mr-4 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                            <FileText :size="28" />
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-gray-800 truncate">{{ doc.file_name }}</p>
+                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">{{ doc.file_size }}
+                                                • {{
+                                                    formatLocalTime(doc.uploaded_at) }}</p>
+                                        </div>
+                                        <a :href="doc.url" target="_blank"
+                                            class="ml-2 px-4 py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">View</a>
+                                    </div>
+                                </div>
+
+                                <div v-if="activeTab === 'interviews'"
+                                    class="space-y-10 animate-in fade-in duration-300">
+                                    <div v-if="!selectedProfile?.interviews?.length"
+                                        class="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                                        <div
+                                            class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                                            <Info class="text-gray-300" :size="32" />
+                                        </div>
+                                        <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">No Sessions
+                                            Recorded</p>
+                                    </div>
+
+                                    <div v-for="(interview, index) in selectedProfile?.interviews" :key="interview.id"
+                                        class="relative pl-10 border-l-2 border-indigo-100 pb-2 last:pb-0">
+                                        <div
+                                            class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
+                                        </div>
+
+                                        <div
+                                            class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                                            <div
+                                                class="px-6 py-4 bg-gray-50/80 border-b border-gray-100 flex justify-between items-center">
+                                                <h4
+                                                    class="text-xs font-black text-indigo-900 uppercase tracking-widest">
+                                                    Session
+                                                    #{{ index + 1 }}</h4>
+                                                <div class="flex items-center gap-4">
+                                                    <span class="text-[10px] text-gray-400 font-bold">{{
+                                                        formatLocalTime(interview.created_at) }}</span>
+                                                    <span :class="[
+                                                        interview.status === 'ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700',
+                                                        'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter'
+                                                    ]">{{ interview.status }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="p-6 space-y-6">
+                                                <div v-for="(q, qIndex) in interview.questions" :key="q.id"
+                                                    class="flex gap-5">
+                                                    <div
+                                                        class="flex-shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black border border-indigo-100 shadow-sm">
+                                                        {{ qIndex + 1 }}
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <p class="text-sm text-gray-700 font-bold leading-relaxed">{{
+                                                            q.text }}
+                                                        </p>
+                                                        <div class="mt-3 flex gap-3">
+                                                            <span
+                                                                class="text-[9px] bg-gray-100 text-gray-500 px-2 py-1 rounded font-bold uppercase tracking-tighter">Type:
+                                                                {{ q.type }}</span>
+                                                            <span
+                                                                class="text-[9px] bg-indigo-50 text-indigo-400 px-2 py-1 rounded font-bold uppercase tracking-tighter">Status:
+                                                                {{ q.status }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+            </Transition>
+        </Teleport>
+    </div>
+</template>
+
+<style>
+/* Table Styling */
+.customize-table {
+    --easy-table-header-background-color: #4f46e5;
+    --easy-table-header-font-color: #ffffff;
+    --easy-table-header-height: 60px;
+    --easy-table-body-row-height: 70px;
+    --easy-table-header-font-size: 13px;
+    --easy-table-body-font-size: 13px;
+    --easy-table-footer-font-color: #4f46e5;
+    --easy-table-row-border: 1px solid #f1f5f9;
+}
+
+/* Animations */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(100%);
+}
+
+/* Scrollers */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 5px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
+</style>
