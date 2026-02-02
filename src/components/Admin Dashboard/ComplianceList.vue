@@ -10,16 +10,15 @@ import { formatLocalTime } from '@/utils/formatLocalTime';
 
 const store = useProfileStore();
 // Destructuring the new state structure
-const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen } = storeToRefs(store);
-const { fetchCompliance, openProfileDrawer, closeDrawer } = store;
+const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab, isPreviewOpen, previewType, previewUrl } = storeToRefs(store);
+const { fetchCompliance, openProfileDrawer, closeDrawer, openPreview, closePreview } = store;
 
-const activeTab = ref('profile');
 
 const headers = [
-    { text: 'ID', value: 'id', sortable: true },
+    { text: 'ID', value: 'id' },
     { text: 'Student', value: 'student_info' },
     { text: 'University/Program/Intake', value: 'program_info' },
-    { text: 'Counselor', value: 'counselor_name' },
+    { text: 'Counselor', value: 'counselor' },
     { text: 'Created At', value: 'created' },
     { text: 'ACTIONS', value: 'operation', width: 80 },
 ];
@@ -61,6 +60,13 @@ onMounted(async () => {
                         <p class=" font-medium">{{ intake }}</p>
                     </div>
                 </template>
+                <template #item-counselor="{ counselor_name, counselor_email }">
+                    <div class="text-xs">
+                        <p class="font-semibold text-indigo-500">{{ counselor_name }}</p>
+                        <p class="font-semibold text-gray-700">{{ counselor_email }}</p>
+
+                    </div>
+                </template>
 
                 <template #item-created="{ created_at }">
                     <p class="text-[11px] text-gray-500"> {{ formatLocalTime(created_at) }} </p>
@@ -68,7 +74,7 @@ onMounted(async () => {
 
                 <template #item-operation="item">
                     <button @click="openProfileDrawer(item)"
-                        class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                        class="p-2 bg-indigo-50 text-indigo-600 cursor-pointer rounded-lg hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
                         <Eye :size="18" />
                     </button>
                 </template>
@@ -84,12 +90,12 @@ onMounted(async () => {
 
                     <Transition name="slide">
                         <div v-if="isDrawerOpen"
-                            class="relative w-screen max-w-5xl bg-white shadow-2xl flex flex-col h-full">
+                            class="relative w-screen max-w-4xl bg-white shadow-2xl flex flex-col h-full">
 
                             <div
                                 class="relative bg-gradient-to-br from-indigo-700 via-indigo-800 to-violet-900 px-8 py-10 text-white shadow-lg">
                                 <button @click="closeDrawer()"
-                                    class="absolute top-6 right-6 p-2 rounded-full hover:bg-white/20 transition-all border border-white/10">
+                                    class="absolute cursor-pointer top-6 right-6 p-2 rounded-full hover:bg-white/20 transition-all border border-white/10">
                                     <X :size="24" />
                                 </button>
                                 <div class="flex items-center gap-6">
@@ -114,8 +120,8 @@ onMounted(async () => {
                             </div>
 
                             <div class="flex border-b border-gray-100 px-8 sticky top-0 bg-white z-10 shadow-sm">
-                                <button v-for="tab in ['profile', 'documents', 'interviews']" :key="tab"
-                                    @click="activeTab = tab"
+                                <button class="cursor-pointer" v-for="tab in ['profile', 'documents', 'interviews']"
+                                    :key="tab" @click="activeTab = tab"
                                     :class="[activeTab === tab ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600', 'py-5 border-b-2 font-black text-[11px] uppercase tracking-[0.2em] mr-10 transition-all']">
                                     {{ tab }}
                                 </button>
@@ -187,8 +193,10 @@ onMounted(async () => {
                                                 • {{
                                                     formatLocalTime(doc.uploaded_at) }}</p>
                                         </div>
-                                        <a :href="doc.url" target="_blank"
-                                            class="ml-2 px-4 py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">View</a>
+                                        <button @click="openPreview(doc.url, doc.file_type)"
+                                            class="ml-2 px-4 py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">
+                                            View
+                                        </button>
                                     </div>
                                 </div>
 
@@ -259,6 +267,40 @@ onMounted(async () => {
                 </div>
             </Transition>
         </Teleport>
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="isPreviewOpen" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-10">
+                    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closePreview"></div>
+
+                    <div
+                        class="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-full flex flex-col overflow-hidden animate-in zoom-in duration-300">
+                        <div class="flex items-center justify-between px-6 py-4 border-b">
+                            <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                                <FileText :size="18" class="text-indigo-600" />
+                                Document Preview
+                            </h3>
+                            <button @click="closePreview" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <X :size="20" />
+                            </button>
+                        </div>
+
+                        <div class="flex-1 bg-gray-100 overflow-auto flex items-center justify-center p-4">
+                            <img v-if="previewType.includes('image')" :src="previewUrl"
+                                class="max-w-full max-h-full object-contain shadow-lg" />
+
+                            <iframe v-else-if="previewType.includes('pdf')" :src="previewUrl"
+                                class="w-full h-full rounded-md shadow-lg"></iframe>
+
+                            <div v-else class="text-center">
+                                <p class="text-gray-500">Preview not available for this file type.</p>
+                                <a :href="previewUrl" target="_blank"
+                                    class="mt-4 inline-block text-indigo-600 font-bold">Download File</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
     </div>
 </template>
 
@@ -267,8 +309,8 @@ onMounted(async () => {
 .customize-table {
     --easy-table-header-background-color: #4f46e5;
     --easy-table-header-font-color: #ffffff;
-    --easy-table-header-height: 60px;
-    --easy-table-body-row-height: 70px;
+    --easy-table-header-height: 70px;
+    --easy-table-body-row-height: 80px;
     --easy-table-header-font-size: 13px;
     --easy-table-body-font-size: 13px;
     --easy-table-footer-font-color: #4f46e5;
@@ -278,7 +320,7 @@ onMounted(async () => {
 /* Animations */
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.0s ease;
 }
 
 .fade-enter-from,

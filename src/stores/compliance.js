@@ -6,6 +6,8 @@ export const useProfileStore = defineStore('profile', () => {
     // List Data
     const profiles = ref([]);
     const isFetching = ref(false);
+    const activeTab = ref('profile');
+
     const pagination = ref({
         current_page: 1,
         last_page: 1,
@@ -13,14 +15,48 @@ export const useProfileStore = defineStore('profile', () => {
         per_page: 10
     });
 
-    // Drawer / Selection State
-    // Renamed to selectedProfile because the root of the data is the Profile
-    const selectedProfile = ref(null);
+
     const isDrawerOpen = ref(false);
 
-    // Helpers for specific IDs (if needed for other forms)
     const studentId = ref(null);
     const profileId = ref(null);
+    const selectedProfile = ref(null)
+
+    const isPreviewOpen = ref(false)
+    const previewUrl = ref('')
+    const previewType = ref('')
+
+
+    function closePreview() {
+        isPreviewOpen.value = false;
+        previewUrl.value = '';
+    }
+    // Replace these functions in your store
+    function openPreview(url, type) {
+        const backendBase = "http://127.0.0.1:8000";
+
+        // FIX: Access refs directly and use .value
+        previewUrl.value = `${backendBase}/storage/${url}`;
+        previewType.value = type;
+        isPreviewOpen.value = true;
+
+        console.log("Loading Image From:", previewUrl.value);
+    }
+
+    function closeDrawer() {
+        isDrawerOpen.value = false;
+
+        // FIX: Do NOT use ref() here. Just update the value.
+        activeTab.value = 'profile';
+
+        setTimeout(() => {
+            if (!isDrawerOpen.value) {
+                selectedProfile.value = null;
+                profileId.value = null;
+                studentId.value = null;
+            }
+        }, 300);
+    }
 
     /**
      * Actions
@@ -50,23 +86,26 @@ export const useProfileStore = defineStore('profile', () => {
     function openProfileDrawer(profile) {
         selectedProfile.value = profile;
         isDrawerOpen.value = true;
+        activeTab.value = 'profile';
 
-        // Sync helper IDs in case you need them for API calls like "Update Profile"
         profileId.value = profile.id;
         studentId.value = profile.student?.student_id;
     }
 
     function closeDrawer() {
         isDrawerOpen.value = false;
-        // Clean up after transition
+        activeTab = ref('profile');
         setTimeout(() => {
             if (!isDrawerOpen.value) {
                 selectedProfile.value = null;
                 profileId.value = null;
                 studentId.value = null;
+
             }
         }, 300);
     }
+
+
 
     return {
         // State
@@ -77,10 +116,15 @@ export const useProfileStore = defineStore('profile', () => {
         isDrawerOpen,
         studentId,
         profileId,
+        activeTab,
+        isPreviewOpen,
+        previewUrl,
+        previewType,
 
         // Actions
         fetchCompliance,
         openProfileDrawer,
-        closeDrawer
+        closeDrawer,
+        openPreview, closePreview
     };
 });
