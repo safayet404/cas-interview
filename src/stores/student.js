@@ -24,7 +24,7 @@ export const useStudentStore = defineStore('student', () => {
     })
     const isFetching = ref(false)
 
-    const loading = ref({ student: false, profile: false, interview: false });
+    const loading = ref({ student: false, profile: false, interview: false, generateQuestion: false });
 
     function openStudentDrawer(student) {
         selectedStudent.value = student
@@ -85,13 +85,16 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     async function generateQuestions() {
+        loading.value.generateQuestion = true;
         try {
-            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 1 });
+            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 5 });
             alert("Interview creation Complete!");
             resetForm();
         } catch (error) {
             console.error(error);
             alert("Failed to generate questions.");
+        } finally {
+            loading.value.generateQuestion = false;
         }
     }
 

@@ -95,7 +95,8 @@ function interviewSection() {
 
                 <button class="mt-3 rounded-lg shadow-2xl border  cursor-pointer bg-[#7367F0] text-white px-3 py-2"
                     @click="createStudent" :disabled="loading.student">
-                    Continue
+                    <span v-if="loading.student" class="loader"></span>
+                    <span>{{ loading.student ? 'Saving...' : 'Continue' }}</span>
                 </button>
 
                 <div v-if="studentId" class="mt-2 text-sm opacity-80">
@@ -110,9 +111,9 @@ function interviewSection() {
                 <div class="grid grid-cols-2 gap-2 space-y-3">
 
                     <div class="flex flex-col-reverse">
-                        <input v-model="profile.institution" placeholder="Institution"
+                        <input v-model="profile.institution" placeholder="University of Sunderland"
                             class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
-                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">University of Sunderland</label>
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Institution</label>
                     </div>
 
                     <div class="flex flex-col-reverse">
@@ -122,9 +123,9 @@ function interviewSection() {
                     </div>
 
                     <div class="flex flex-col-reverse">
-                        <input v-model="profile.intake" placeholder="Intake"
+                        <input v-model="profile.intake" placeholder="January 2026"
                             class="w-full peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2" />
-                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">January 2026</label>
+                        <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Intake</label>
                     </div>
 
                     <div class="flex flex-col-reverse">
@@ -164,9 +165,10 @@ function interviewSection() {
 
                 </div>
 
-                <button class="mt-3 rounded bg-[#7367F0] text-white px-3 py-2" @click="createProfile"
+                <button class="mt-3 rounded bg-[#7367F0] cursor-pointer text-white px-3 py-2" @click="createProfile"
                     :disabled="loading.profile">
-                    Continue
+                    <span v-if="loading.profile" class="loader"></span>
+                    <span>{{ loading.profile ? 'Saving...' : 'Continue' }}</span>
                 </button>
 
                 <div v-if="profileId" class="mt-2 text-sm opacity-80">
@@ -190,8 +192,9 @@ function interviewSection() {
 
                 <div v-if="docUploaded" class="flex justify-center">
 
-                    <button @click="interviewSection"
-                        class="bg-[#7367F0] text-white py-2 px-4 rounded">Continue</button>
+                    <button @click="interviewSection" class="bg-[#7367F0] cursor-pointer text-white py-2 px-4 rounded">
+                        Continue
+                    </button>
 
                 </div>
             </div>
@@ -204,14 +207,16 @@ function interviewSection() {
 
                 <div class="flex justify-center">
 
-                    <button v-if="!interviewId" class="rounded bg-[#7367F0]  text-white px-3 py-2"
+                    <button v-if="!interviewId" class="rounded bg-[#7367F0] cursor-pointer  text-white px-3 py-2"
                         @click="createInterview" :disabled="loading.interview">
-                        Create Interview
+                        <span v-if="loading.interview" class="loader"></span>
+                        <span>{{ loading.interview ? 'Creating...' : 'Create Interview' }}</span>
                     </button>
 
-                    <button v-if="interviewId" class="rounded bg-[#7367F0] text-white px-3 py-2"
+                    <button v-if="interviewId" class="rounded bg-[#7367F0] cursor-pointer text-white px-3 py-2"
                         @click="generateQuestions">
-                        Generate Questions (AI)
+                        <span v-if="loading.generateQuestion" class="loader"></span>
+                        <span>{{ loading.generateQuestion ? 'Generating...' : 'Generate Questions(AI)' }}</span>
                     </button>
                 </div>
 
@@ -250,5 +255,35 @@ function interviewSection() {
 
 .filepond--label-action {
     text-decoration-color: #7367F0;
+}
+
+.loader {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: rotation 1s linear infinite;
+}
+
+.loader-lg {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #7367F0;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
