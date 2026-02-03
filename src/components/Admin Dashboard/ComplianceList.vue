@@ -7,9 +7,9 @@ import {
     FileText, Calendar, Wallet, Info, User
 } from 'lucide-vue-next';
 import { formatLocalTime } from '@/utils/formatLocalTime';
+import GlobalLoader from '../GlobalLoader.vue';
 
 const store = useProfileStore();
-// Destructuring the new state structure
 const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab, isPreviewOpen, previewType, previewUrl } = storeToRefs(store);
 const { fetchCompliance, openProfileDrawer, closeDrawer, openPreview, closePreview } = store;
 
@@ -28,6 +28,8 @@ const serverOptions = ref({
     rowsPerPage: 10,
 });
 
+
+
 watch(serverOptions, (value) => {
     fetchCompliance(value.page, value.rowsPerPage);
 }, { deep: true });
@@ -40,11 +42,13 @@ onMounted(async () => {
 <template>
     <div class="min-h-screen bg-[#F8F7FA] p-4 font-sans">
 
+        <GlobalLoader v-if="isFetching" />
+
         <Head title="Compliance Profiles" />
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <EasyDataTable v-model:server-options="serverOptions" :server-items-length="pagination.total"
-                :loading="isFetching" :headers="headers" :items="profiles" buttons-pagination
+                :headers="headers" :items="profiles" :loading="isFetching" buttons-pagination
                 table-class-name="customize-table">
                 <template #item-student_info="{ student }">
                     <div class="py-3">

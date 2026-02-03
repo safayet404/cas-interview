@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import vueFilePond from 'vue-filepond';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
@@ -9,6 +9,7 @@ import FilePondPluginPdfPreview from 'filepond-plugin-pdf-preview';
 import 'filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.min.css';
 import { useStudentStore } from '@/stores/student';
 import { storeToRefs } from 'pinia';
+import GlobalLoader from '../GlobalLoader.vue';
 
 const store = useStudentStore()
 const { student, studentId, profile, profileId, interviewId, tab, docUploaded, loading } = storeToRefs(store)
@@ -40,6 +41,10 @@ const serverOptions = {
     }
 };
 
+const isGlobalLoading = computed(() => {
+    return loading.value.student || loading.value.profile || loading.value.interview || loading.value.generateQuestion;
+})
+
 function interviewSection() {
     tab.value = "interview"
 }
@@ -48,6 +53,7 @@ function interviewSection() {
 <template>
 
     <div class=" min-h-screen  bg-[#F8F7FA]">
+        <GlobalLoader v-if="isGlobalLoading" />
 
         <Head title="Student Create" />
 

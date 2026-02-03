@@ -73,12 +73,15 @@ export const useProfileStore = defineStore('profile', () => {
                 params: { page, per_page: perPage }
             });
 
+            console.log("comp", data.meta);
+
+
             profiles.value = data.data;
             pagination.value = {
-                current_page: data.meta.current_page,
-                last_page: data.meta.last_page,
-                total: data.meta.total,
-                per_page: data.meta.per_page
+                current_page: Number(data.meta.current_page),
+                last_page: Number(data.meta.last_page),
+                total: Number(data.meta.total),
+                per_page: Number(data.meta.per_page)
             };
             return data;
         } catch (error) {
