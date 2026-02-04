@@ -16,7 +16,7 @@ export const useInterviewStore = defineStore("interview", {
             this.loading = true,
                 this.error = null
             try {
-                const id = authStore?.studentId
+                const id = authStore?.userId
                 console.log("student id", id);
 
 
