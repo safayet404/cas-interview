@@ -151,7 +151,7 @@ onMounted(async () => {
                                                     {{ label }}</p>
                                                 <p class="text-gray-900 font-bold text-sm leading-snug">{{
                                                     selectedProfile[key]
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                         </div>
 
@@ -170,14 +170,14 @@ onMounted(async () => {
                                                     Paid</p>
                                                 <p class="text-xl font-black text-emerald-700">${{
                                                     selectedProfile.paid_amount
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                             <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100 shadow-inner">
                                                 <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance
                                                     Due</p>
                                                 <p class="text-xl font-black text-rose-700">${{
                                                     selectedProfile.remaining_amount
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -216,20 +216,21 @@ onMounted(async () => {
                                             Recorded</p>
                                     </div>
 
-                                    <div v-for="(interview, index) in selectedProfile?.interviews" :key="interview.id"
+                                    <div v-for="(interview, index) in selectedProfile?.interviews"
+                                        :key="interview.interview_id"
                                         class="relative pl-10 border-l-2 border-indigo-100 pb-2 last:pb-0">
+
                                         <div
                                             class="absolute -left-2.75 top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
                                         </div>
 
                                         <div
-                                            class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                                            class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
                                             <div
                                                 class="px-6 py-4 bg-gray-50/80 border-b border-gray-100 flex justify-between items-center">
                                                 <h4
                                                     class="text-xs font-black text-indigo-900 uppercase tracking-widest">
-                                                    Session
-                                                    #{{ index + 1 }}</h4>
+                                                    Session #{{ index + 1 }}</h4>
                                                 <div class="flex items-center gap-4">
                                                     <span class="text-[10px] text-gray-400 font-bold">{{
                                                         formatLocalTime(interview.created_at) }}</span>
@@ -240,26 +241,87 @@ onMounted(async () => {
                                                 </div>
                                             </div>
 
-                                            <div class="p-6 space-y-6">
-                                                <div v-for="(q, qIndex) in interview.questions" :key="q.id"
-                                                    class="flex gap-5">
-                                                    <div
-                                                        class="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black border border-indigo-100 shadow-sm">
-                                                        {{ qIndex + 1 }}
-                                                    </div>
-                                                    <div class="flex-1">
-                                                        <p class="text-sm text-gray-700 font-bold leading-relaxed">{{
-                                                            q.text }}
-                                                        </p>
-                                                        <div class="mt-3 flex gap-3">
-                                                            <span
-                                                                class="text-[9px] bg-gray-100 text-gray-500 px-2 py-1 rounded font-bold uppercase tracking-tighter">Type:
-                                                                {{ q.type }}</span>
-                                                            <span
-                                                                class="text-[9px] bg-indigo-50 text-indigo-400 px-2 py-1 rounded font-bold uppercase tracking-tighter">Status:
-                                                                {{ q.status }}</span>
+                                            <div class="p-6 space-y-8">
+                                                <div v-for="(q, qIndex) in interview.questions" :key="q.question_id"
+                                                    class="group">
+                                                    <div class="flex gap-5">
+                                                        <div
+                                                            class="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black border border-indigo-100">
+                                                            {{ qIndex + 1 }}
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <h5
+                                                                class="text-sm text-gray-800 font-bold leading-relaxed mb-2">
+                                                                {{ q.text }}</h5>
+
+                                                            <div
+                                                                class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-4">
+                                                                <p
+                                                                    class="text-[10px] uppercase font-black text-gray-400 mb-2 tracking-widest">
+                                                                    Student Response</p>
+                                                                <p class="text-sm text-gray-600 italic">"{{ q.transcript
+                                                                    || 'No transcript available' }}"</p>
+                                                            </div>
+
+                                                            <div v-if="q.status === 'completed'"
+                                                                class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                <div
+                                                                    class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                                                                    <p
+                                                                        class="text-[10px] uppercase font-black text-indigo-600 mb-3 tracking-widest flex items-center gap-2">
+                                                                        <CheckCheck :size="14" /> AI Key Observations
+                                                                    </p>
+                                                                    <ul class="space-y-2">
+                                                                        <li v-for="(point, pIdx) in q.summary"
+                                                                            :key="pIdx"
+                                                                            class="text-xs text-gray-600 flex gap-2">
+                                                                            <span class="text-indigo-300">•</span> {{
+                                                                                point }}
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+
+                                                                <div
+                                                                    class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                                                                    <div class="flex justify-between items-start mb-3">
+                                                                        <p
+                                                                            class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
+                                                                            Consistency Rating</p>
+                                                                        <span :class="[
+                                                                            q.consistency === 'concerning' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700',
+                                                                            'px-2 py-0.5 rounded text-[10px] font-black uppercase'
+                                                                        ]">
+                                                                            {{ q.consistency }}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div v-if="q.key_points?.length" class="mt-4">
+                                                                        <p
+                                                                            class="text-[10px] uppercase font-black text-gray-400 mb-2 tracking-widest">
+                                                                            Extracted Facts</p>
+                                                                        <div class="flex flex-wrap gap-2">
+                                                                            <span v-for="kp in q.key_points" :key="kp"
+                                                                                class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-medium">
+                                                                                {{ kp }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div v-else
+                                                                class="flex items-center gap-2 text-amber-500 py-2">
+                                                                <div
+                                                                    class="w-2 h-2 bg-amber-500 rounded-full animate-pulse">
+                                                                </div>
+                                                                <span
+                                                                    class="text-[10px] font-black uppercase tracking-widest">AI
+                                                                    Report Generating...</span>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    <hr v-if="qIndex !== interview.questions.length - 1"
+                                                        class="mt-8 border-gray-50" />
                                                 </div>
                                             </div>
                                         </div>

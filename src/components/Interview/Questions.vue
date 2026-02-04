@@ -101,7 +101,7 @@ const startRecording = () => {
     // Automatic upload when recording stops
     mediaRecorder.onstop = handleUpload;
 
-    mediaRecorder.start();
+    mediaRecorder.start(1000);
 
     timerInterval = setInterval(() => {
         if (recordingTimer.value > 0) recordingTimer.value--;
