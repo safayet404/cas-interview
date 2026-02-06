@@ -29,7 +29,11 @@ const serverOptions = ref({
 });
 
 
-
+const downloadReport = (path) => {
+    if (!path) return;
+    const url = `/storage/${path}`;
+    window.open(url, '_blank');
+};
 watch(serverOptions, (value) => {
     fetchCompliance(value.page, value.rowsPerPage);
 }, { deep: true });
@@ -151,7 +155,7 @@ onMounted(async () => {
                                                     {{ label }}</p>
                                                 <p class="text-gray-900 font-bold text-sm leading-snug">{{
                                                     selectedProfile[key]
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                         </div>
 
@@ -170,14 +174,14 @@ onMounted(async () => {
                                                     Paid</p>
                                                 <p class="text-xl font-black text-emerald-700">${{
                                                     selectedProfile.paid_amount
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                             <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100 shadow-inner">
                                                 <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance
                                                     Due</p>
                                                 <p class="text-xl font-black text-rose-700">${{
                                                     selectedProfile.remaining_amount
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -231,6 +235,14 @@ onMounted(async () => {
                                                 <h4
                                                     class="text-xs font-black text-indigo-900 uppercase tracking-widest">
                                                     Session #{{ index + 1 }}</h4>
+
+                                                <button v-if="interview.report_path"
+                                                    @click="openPreview(interview.report_path, 'application/pdf')"
+                                                    class="flex items-center gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all cursor-pointer">
+                                                    <Eye :size="12" /> View Report
+                                                </button>
+
+
                                                 <div class="flex items-center gap-4">
                                                     <span class="text-[10px] text-gray-400 font-bold">{{
                                                         formatLocalTime(interview.created_at) }}</span>

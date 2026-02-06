@@ -3,79 +3,52 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useProfileStore = defineStore('profile', () => {
-    // List Data
     const profiles = ref([]);
     const isFetching = ref(false);
     const activeTab = ref('profile');
-
-    const pagination = ref({
-        current_page: 1,
-        last_page: 1,
-        total: 0,
-        per_page: 10
-    });
-
-
+    const pagination = ref({ current_page: 1, last_page: 1, total: 0, per_page: 10 });
     const isDrawerOpen = ref(false);
+    const selectedProfile = ref(null);
 
-    const studentId = ref(null);
-    const profileId = ref(null);
-    const selectedProfile = ref(null)
+    // Preview State
+    const isPreviewOpen = ref(false);
+    const previewUrl = ref('');
+    const previewType = ref('');
 
-    const isPreviewOpen = ref(false)
-    const previewUrl = ref('')
-    const previewType = ref('')
+    function openPreview(path, type = 'application/pdf') {
+        if (!path) return;
+        const backendBase = "http://127.0.0.1:8000";
+        // Avoid double storage prefix if path already contains it
+        const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+        const fullPath = cleanPath.startsWith('storage/') ? cleanPath : `storage/${cleanPath}`;
 
+        previewUrl.value = `${backendBase}/${fullPath}`;
+        previewType.value = type;
+        isPreviewOpen.value = true;
+    }
 
     function closePreview() {
         isPreviewOpen.value = false;
         previewUrl.value = '';
-    }
-    // Replace these functions in your store
-    function openPreview(url, type) {
-        const backendBase = "http://127.0.0.1:8000";
-
-        previewUrl.value = `${backendBase}/storage/${url}`;
-        previewType.value = type;
-        isPreviewOpen.value = true;
-
+        previewType.value = '';
     }
 
     function openProfileDrawer(profile) {
         selectedProfile.value = profile;
         isDrawerOpen.value = true;
-        profileId.value = profile.id;
-        studentId.value = profile.student?.student_id;
     }
-
 
     function closeDrawer() {
         isDrawerOpen.value = false;
-
         activeTab.value = 'profile';
-
-        setTimeout(() => {
-            if (!isDrawerOpen.value) {
-                selectedProfile.value = null;
-                profileId.value = null;
-                studentId.value = null;
-            }
-        }, 300);
     }
 
-    /**
-     * Actions
-     */
     async function fetchCompliance(page = 1, perPage = 10) {
         isFetching.value = true;
         try {
             const { data } = await api.get('/compliance-profiles', {
                 params: { page, per_page: perPage }
             });
-
-            console.log("comp", data.meta);
-
-
             profiles.value = data.data;
             pagination.value = {
                 current_page: Number(data.meta.current_page),
@@ -83,7 +56,6 @@ export const useProfileStore = defineStore('profile', () => {
                 total: Number(data.meta.total),
                 per_page: Number(data.meta.per_page)
             };
-            return data;
         } catch (error) {
             console.error("Fetch Error:", error);
         } finally {
@@ -91,28 +63,9 @@ export const useProfileStore = defineStore('profile', () => {
         }
     }
 
-
-
-
-
     return {
-        // State
-        profiles,
-        pagination,
-        isFetching,
-        selectedProfile,
-        isDrawerOpen,
-        studentId,
-        profileId,
-        activeTab,
-        isPreviewOpen,
-        previewUrl,
-        previewType,
-
-        // Actions
-        fetchCompliance,
-        openProfileDrawer,
-        closeDrawer,
-        openPreview, closePreview
+        profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab,
+        isPreviewOpen, previewUrl, previewType,
+        fetchCompliance, openProfileDrawer, closeDrawer, openPreview, closePreview
     };
 });
