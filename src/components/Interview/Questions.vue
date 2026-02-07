@@ -130,7 +130,7 @@ const handleUpload = async () => {
             startPreparation();
         } else {
             interviewStarted.value = false;
-            alert("Interview Complete! All responses saved.");
+            router.push('/dashboard');
         }
     } catch (err) {
         alert("Upload failed. Check internet and try this question again.");
