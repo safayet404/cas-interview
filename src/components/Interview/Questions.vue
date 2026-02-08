@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { CheckCircle2, Square, Video, Loader2 } from 'lucide-vue-next';
-import { useInterviewStore } from '@/stores/questions';
+import { useQuestionStore } from '@/stores/questions';
 import { useRouter } from 'vue-router'; // Import router
-const qs = useInterviewStore();
+const qs = useQuestionStore();
 
 // --- State Management ---
 const interviewStarted = ref(false);

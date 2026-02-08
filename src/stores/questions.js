@@ -2,7 +2,7 @@ import api from "@/services/api"
 import { defineStore } from "pinia"
 import { useAuthStore } from "./auth"
 
-export const useInterviewStore = defineStore("interview", {
+export const useQuestionStore = defineStore("question", {
     state: () => ({
         questions: [],
         loading: false,
