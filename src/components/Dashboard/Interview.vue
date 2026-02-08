@@ -1,5 +1,19 @@
 <script setup>
+import { useInterviewStore } from '@/stores/interview';
 import { ArrowLeft } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+
+const store = useInterviewStore()
+
+const { interviews } = storeToRefs(store)
+const { fetchInterviewPerStudent } = store
+
+onMounted(() => {
+    fetchInterviewPerStudent()
+    console.log(interviews.value);
+
+})
 </script>
 
 <template>
@@ -27,6 +41,28 @@ import { ArrowLeft } from 'lucide-vue-next';
                     Start interview
                 </RouterLink>
             </div>
+
+            <div class="flex gap-5">
+                <div v-for="item in interviews"
+                    :class="item.status === 'completed' ? 'border-green-800' : 'border-orange-500'"
+                    class="flex flex-col mt-8 max-w-lg gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl rounded-l-sm border-l-[6px]  shadow-sm">
+                    <h2 class="text-lg font-bold">{{ item.compliance_profile?.institution }}</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm">
+                        {{ item.compliance_profile?.program }} - {{ item.compliance_profile?.intake }}
+                    </p>
+
+                    <RouterLink :to="item.status === 'ready' ? '/setup' : ''"
+                        class="w-fit px-8 py-2.5 capitalize font-semibold rounded-lg transition-all" :class="{
+                            'bg-[#0070f3] hover:bg-blue-600 text-white active:scale-95': item.status === 'ready',
+                            'bg-green-600 text-white cursor-default': item.status === 'completed',
+                            'bg-gray-400 text-gray-200 cursor-not-allowed pointer-events-none': item.status !== 'ready' && item.status !== 'completed'
+                        }">
+                        {{ item.status === "ready" ? "Start Interview" : item.status }}
+                    </RouterLink>
+                </div>
+
+            </div>
+
         </div>
 
         <div class="mt-12 pt-6 border-t border-slate-100 dark:border-slate-800">

@@ -20,12 +20,10 @@ export const useQuestionStore = defineStore("question", {
                 if (!id) return []
 
                 const response = await api.get(`interview-questions/${id}`)
-
-                // Store the questions array and status
                 this.questions = response.data.data
                 this.interviewStatus = response.data.interview_status
 
-                return this.questions // Return for component resume logic
+                return this.questions
             } catch (error) {
                 this.error = error.response?.data?.message || "Failed to load questions"
                 return []
