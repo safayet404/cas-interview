@@ -1,12 +1,6 @@
 <script setup>
 
 import { computed, onMounted, ref, watch } from 'vue';
-import vueFilePond from 'vue-filepond';
-import 'filepond/dist/filepond.min.css';
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import FilePondPluginPdfPreview from 'filepond-plugin-pdf-preview';
-import 'filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.min.css';
 import { useStudentStore } from '@/stores/student';
 import { storeToRefs } from 'pinia';
 import GlobalLoader from '../GlobalLoader.vue';
@@ -14,49 +8,23 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.css';
 
 const store = useStudentStore()
-const { student, searchStudents, studentId, profile, profileId, interviewId, tab, docUploaded, loading, isFetching } = storeToRefs(store)
-const { createStudent, createProfile, selectExistingStudent, searchStudent, createInterview, uploadDocumentAction, generateQuestions } = store
-const FilePond = vueFilePond(FilePondPluginImagePreview, FilePondPluginPdfPreview);
-const pond = ref(null);
-const serverOptions = {
+const { searchStudents, profile, profileId, interviewId, tab, loading, isFetching } = storeToRefs(store)
+const { createProfile, selectExistingStudent, searchStudent, createInterview, generateQuestions } = store
 
-    process: async (fieldName, file, metadata, load, error, progress, abort) => {
-        const formData = new FormData();
-        formData.append('files[]', file, file.name);
-
-        try {
-
-            const res = await uploadDocumentAction(formData, (e) => {
-                progress(e.lengthComputable, e.loaded, e.total);
-            });
-
-            if (res.data.status === 'success') {
-                load(res.data);
-                docUploaded.value = true;
-            }
-        } catch (err) {
-            console.error("Upload error", err);
-            error('Upload failed');
-        }
-
-        return { abort: () => abort() };
-    }
-};
-
-// This will show the actual array data
-console.log("students search", searchStudents.value);
 const isGlobalLoading = computed(() => {
     return loading.value.student || loading.value.profile || loading.value.interview || loading.value.generateQuestion;
 })
 
-function interviewSection() {
-    tab.value = "interview"
-}
 const selectedStudent = ref(null);
 
 watch(selectedStudent, (s) => {
     selectExistingStudent(s?.id ?? null);
 });
+
+async function handleFinalStep() {
+    await generateQuestions();
+    selectedStudent.value = null;
+}
 
 onMounted(() => {
     searchStudent()
@@ -95,7 +63,6 @@ onMounted(() => {
                 </div>
 
             </div>
-            <!-- v-if="studentId && !profileId" -->
 
             <div v-if="tab === 'compliance'" class="mb-4 rounded-xl p-4  shadow-[0_0_20px_5px_rgba(0,0,0,0.1)]">
                 <h2 class="mb-5 font-semibold">Compliance Packet</h2>
@@ -149,12 +116,6 @@ onMounted(() => {
                             class="w-full h-28 peer rounded border border-gray-400 outline-none focus:border-[#7367F0] p-2"></textarea>
                         <label class="mb-1 text-sm  peer-focus:text-[#7367F0]">Notes</label>
                     </div>
-
-
-
-
-
-
                 </div>
 
                 <button class="mt-3 rounded bg-[#7367F0] cursor-pointer text-white px-3 py-2" @click="createProfile()"
@@ -163,9 +124,7 @@ onMounted(() => {
                     <span>{{ loading.profile ? 'Saving...' : 'Continue' }}</span>
                 </button>
 
-                <div v-if="profileId" class="mt-2 text-sm opacity-80">
-                    Profile ID : {{ profileId }}
-                </div>
+
             </div>
 
 
@@ -180,14 +139,13 @@ onMounted(() => {
                         <span>{{ loading.interview ? 'Creating...' : 'Create Interview' }}</span>
                     </button>
 
-                    <button v-else class="rounded bg-[#7367F0] text-white px-3 py-2" @click="generateQuestions()"
+                    <button v-else class="rounded bg-[#7367F0] text-white px-3 py-2" @click="handleFinalStep"
                         :disabled="loading.generateQuestion">
                         <span v-if="loading.generateQuestion" class="loader"></span>
                         <span>{{ loading.generateQuestion ? 'Generating...' : 'Generate Questions (AI)' }}</span>
                     </button>
                 </div>
             </div>
-            <!-- <pre class="mt-4 text-xs opacity-80"> {{ questionsPreview }} </pre> -->
         </div>
     </div>
 
