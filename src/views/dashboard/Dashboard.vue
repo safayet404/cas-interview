@@ -16,6 +16,8 @@ const menuConfig = [
     { id: "create-student", roles: ['Admin'], label: "New Record", icon: Pen, to: "/admin-dashboard/create-student", },
     { id: "all-students", roles: ['Admin'], label: "Record List", icon: PersonStanding, to: "/admin-dashboard/all-students", },
     { id: "all-compliance", roles: ['Admin'], label: "Compliance List", icon: Paperclip, to: "/admin-dashboard/all-compliance", },
+    { id: "create-interview", roles: ['Admin'], label: "Create Interview", icon: Paperclip, to: "/admin-dashboard/create-interview", },
+    { id: "create-compliance", roles: ['Admin'], label: "Compliance Profile", icon: Paperclip, to: "/admin-dashboard/create-compliance", },
 ];
 
 const auth = useAuthStore()
