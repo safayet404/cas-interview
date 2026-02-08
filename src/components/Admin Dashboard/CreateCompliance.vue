@@ -123,14 +123,7 @@ onMounted(() => {
                     <span v-if="loading.profile" class="loader"></span>
                     <span>{{ loading.profile ? 'Saving...' : 'Continue' }}</span>
                 </button>
-
-
             </div>
-
-
-
-
-
             <div v-if="tab === 'interview'" class="rounded-xl shadow-[0_0_20px_5px_rgba(0,0,0,0.1)] p-8">
                 <div class="flex justify-center">
                     <button v-if="!interviewId" class="rounded bg-[#7367F0] text-white px-3 py-2"
