@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { List, FileText, Headphones, PersonStanding, Pen, Paperclip } from "lucide-vue-next";
+import { List, FileText, Headphones, PersonStanding, Pen, Paperclip, UserPen, BadgePlus } from "lucide-vue-next";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { useAuthStore } from "@/stores/auth";
 
@@ -16,8 +16,8 @@ const menuConfig = [
     { id: "create-student", roles: ['Admin'], label: "New Record", icon: Pen, to: "/admin-dashboard/create-student", },
     { id: "all-students", roles: ['Admin'], label: "Record List", icon: PersonStanding, to: "/admin-dashboard/all-students", },
     { id: "all-compliance", roles: ['Admin'], label: "Compliance List", icon: Paperclip, to: "/admin-dashboard/all-compliance", },
-    { id: "create-interview", roles: ['Admin'], label: "Create Interview", icon: Paperclip, to: "/admin-dashboard/create-interview", },
-    { id: "create-compliance", roles: ['Admin'], label: "Compliance Profile", icon: Paperclip, to: "/admin-dashboard/create-compliance", },
+    { id: "create-interview", roles: ['Admin'], label: "Create Interview", icon: BadgePlus, to: "/admin-dashboard/create-interview", },
+    { id: "create-compliance", roles: ['Admin'], label: "Compliance Profile", icon: UserPen, to: "/admin-dashboard/create-compliance", },
 ];
 
 const auth = useAuthStore()

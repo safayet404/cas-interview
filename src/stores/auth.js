@@ -12,7 +12,14 @@ export const useAuthStore = defineStore("auth", {
     getters: {
         isLoggedIn: (state) => !!state.user,
         userId: (state) => state.user.id,
-        fullName: (state) => state.user?.name ? state.user?.name : `${state.user?.first_name} ${state.student?.last_name}`
+        fullName: (state) => {
+            if (state.user?.name) return state.user.name;
+
+            const firstName = state.user?.first_name || '';
+            const lastName = state.user?.last_name || '';
+
+            return `${firstName} ${lastName}`.trim();
+        }
 
     },
     actions: {
