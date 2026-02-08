@@ -15,8 +15,14 @@ export const useStudentStore = defineStore('student', () => {
     const selectedStudent = ref(null);
     const isDrawerOpen = ref(false);
 
-
+    function selectExistingStudent(id) {
+        studentId.value = id ?? null;
+    }
+    function selectExistingProfile(p) {
+        profileId.value = p?.id ?? null;
+    }
     const students = ref([])
+    const searchStudents = ref([])
     const pagination = ref({
         current_page: 1,
         last_page: 1,
@@ -50,14 +56,29 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
-    async function createProfile() {
+    async function createProfile(forStudentId = null) {
         loading.value.profile = true;
         try {
-            const { data } = await api.post(`/students/${studentId.value}/compliance-profiles`, profile.value);
+            // If forStudentId is an event (object), ignore it and use the store's studentId
+            const isManualId = forStudentId && typeof forStudentId !== 'object';
+            const sid = isManualId ? forStudentId : studentId.value;
+
+            const { data } = await api.post(`/students/${sid}/compliance-profiles`, profile.value);
+
+            if (forStudentId) {
+                tab.value = "doc";
+            } else {
+                tab.value = "interview";
+            }
+
             profileId.value = data?.data.id;
-            tab.value = "doc";
+
+            // Logic: If we passed a specific ID, go to interview. 
+
+
+            console.log("Tab changed to:", tab.value);
         } catch (error) {
-            console.error(error);
+            console.error("Profile creation failed:", error);
         } finally {
             loading.value.profile = false;
         }
@@ -69,16 +90,30 @@ export const useStudentStore = defineStore('student', () => {
         });
     }
 
-    async function createInterview() {
+    async function createInterview(forStudentId = null, forProfileId = null) {
         loading.value.interview = true;
         try {
+            // Prevent event objects from being treated as IDs
+            const isManualSid = forStudentId && typeof forStudentId !== 'object';
+            const isManualPid = forProfileId && typeof forProfileId !== 'object';
+
+            const sid = isManualSid ? forStudentId : studentId.value;
+            const pid = isManualPid ? forProfileId : profileId.value;
+
+            // Check if we actually have the IDs before sending
+            if (!sid || !pid) {
+                alert("Missing Student or Profile ID");
+                return;
+            }
+
             const { data } = await api.post('/interviews', {
-                student_id: studentId.value,
-                compliance_profile_id: profileId.value,
+                student_id: sid,
+                compliance_profile_id: pid, // Remove .id here if pid is already the ID
             });
+
             interviewId.value = data?.data.id;
         } catch (error) {
-            console.error(error);
+            console.error("Interview Creation Error:", error);
         } finally {
             loading.value.interview = false;
         }
@@ -123,6 +158,22 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
+    async function searchStudent() {
+        isFetching.value = true;
+        try {
+            const { data } = await api.get('/students', {
+
+            });
+
+            searchStudents.value = data.data;
+            return data;
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            isFetching.value = false;
+        }
+    }
+
 
 
     function resetForm() {
@@ -136,7 +187,7 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     return {
-        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading, students, pagination, isFetching, selectedStudent, isDrawerOpen,
-        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm, fetchStudents, closeDrawer, openStudentDrawer
+        student, profile, studentId, profileId, interviewId, searchStudents, docUploaded, tab, loading, students, pagination, isFetching, selectedStudent, isDrawerOpen,
+        createStudent, createProfile, uploadDocumentAction, createInterview, searchStudent, generateQuestions, resetForm, fetchStudents, closeDrawer, openStudentDrawer, selectExistingProfile, selectExistingStudent
     };
 });
