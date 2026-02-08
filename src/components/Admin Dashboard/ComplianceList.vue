@@ -10,7 +10,7 @@ import { formatLocalTime } from '@/utils/formatLocalTime';
 import GlobalLoader from '../GlobalLoader.vue';
 
 const store = useProfileStore();
-const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab, isPreviewOpen, previewType, previewUrl } = storeToRefs(store);
+const { profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab, stats, isPreviewOpen, previewType, previewUrl } = storeToRefs(store);
 const { fetchCompliance, openProfileDrawer, closeDrawer, openPreview, closePreview } = store;
 
 
@@ -37,9 +37,11 @@ const downloadReport = (path) => {
 watch(serverOptions, (value) => {
     fetchCompliance(value.page, value.rowsPerPage);
 }, { deep: true });
-
 onMounted(async () => {
     await fetchCompliance(serverOptions.value.page, serverOptions.value.rowsPerPage);
+    console.log("profiles ", stats.value);
+
+
 });
 </script>
 
@@ -49,6 +51,14 @@ onMounted(async () => {
         <GlobalLoader v-if="isFetching" />
 
         <Head title="Compliance Profiles" />
+        <div class="flex gap-5 justify-end">
+            <div class="p-5 bg-linear-to-br from-green-800 to-green-300 text-white rounded-md">
+                <p>Total Cases: {{ stats?.total_cases }}</p>
+            </div>
+            <div class="p-5 bg-linear-to-br from-purple-800 to-purple-300 text-white rounded-md">
+                <p>Total Students: {{ stats?.total_students }}</p>
+            </div>
+        </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <EasyDataTable v-model:server-options="serverOptions" :server-items-length="pagination.total"
@@ -155,7 +165,7 @@ onMounted(async () => {
                                                     {{ label }}</p>
                                                 <p class="text-gray-900 font-bold text-sm leading-snug">{{
                                                     selectedProfile[key]
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                         </div>
 
@@ -174,14 +184,14 @@ onMounted(async () => {
                                                     Paid</p>
                                                 <p class="text-xl font-black text-emerald-700">${{
                                                     selectedProfile.paid_amount
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                             <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100 shadow-inner">
                                                 <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance
                                                     Due</p>
                                                 <p class="text-xl font-black text-rose-700">${{
                                                     selectedProfile.remaining_amount
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -202,7 +212,7 @@ onMounted(async () => {
                                                     formatLocalTime(doc.uploaded_at) }}</p>
                                         </div>
                                         <button @click="openPreview(doc.url, doc.file_type)"
-                                            class="ml-2 px-4 cursor-pointer py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">
+                                            class="ml-2 px-4 cursor-pointer py-2  bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">
                                             View
                                         </button>
                                     </div>
@@ -238,7 +248,7 @@ onMounted(async () => {
 
                                                 <button v-if="interview.report_path"
                                                     @click="openPreview(interview.report_path, 'application/pdf')"
-                                                    class="flex items-center gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all cursor-pointer">
+                                                    class="flex items-center cursor-pointer gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all ">
                                                     <Eye :size="12" /> View Report
                                                 </button>
 
@@ -357,7 +367,8 @@ onMounted(async () => {
                                 <FileText :size="18" class="text-indigo-600" />
                                 Document Preview
                             </h3>
-                            <button @click="closePreview" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                            <button @click="closePreview"
+                                class="p-2 cursor-pointer hover:bg-gray-100 rounded-full transition-colors">
                                 <X :size="20" />
                             </button>
                         </div>

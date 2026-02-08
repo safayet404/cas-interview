@@ -9,7 +9,7 @@ export const useProfileStore = defineStore('profile', () => {
     const pagination = ref({ current_page: 1, last_page: 1, total: 0, per_page: 10 });
     const isDrawerOpen = ref(false);
     const selectedProfile = ref(null);
-
+    const stats = ref({ total_cases: 0, total_students: 0 });
     // Preview State
     const isPreviewOpen = ref(false);
     const previewUrl = ref('');
@@ -56,6 +56,11 @@ export const useProfileStore = defineStore('profile', () => {
                 total: Number(data.meta.total),
                 per_page: Number(data.meta.per_page)
             };
+
+            if (data.meta && data.meta.statistics) {
+                stats.value.total_cases = data.meta.statistics.total_compliance_cases;
+                stats.value.total_students = data.meta.statistics.total_unique_students;
+            }
         } catch (error) {
             console.error("Fetch Error:", error);
         } finally {
@@ -65,7 +70,7 @@ export const useProfileStore = defineStore('profile', () => {
 
     return {
         profiles, pagination, isFetching, selectedProfile, isDrawerOpen, activeTab,
-        isPreviewOpen, previewUrl, previewType,
+        isPreviewOpen, previewUrl, previewType, stats,
         fetchCompliance, openProfileDrawer, closeDrawer, openPreview, closePreview
     };
 });
