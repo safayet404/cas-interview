@@ -15,7 +15,7 @@ const downloadCurrentFile = () => {
 <template>
     <Teleport to="body">
         <Transition name="fade">
-            <div v-if="isPreviewOpen" class="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-10">
+            <div v-if="isPreviewOpen" class="fixed inset-0 z-200 flex items-center justify-center p-4 md:p-10">
                 <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closePreview"></div>
 
                 <div
