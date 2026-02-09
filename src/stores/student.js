@@ -117,7 +117,7 @@ export const useStudentStore = defineStore('student', () => {
     async function generateQuestions() {
         loading.value.generateQuestion = true;
         try {
-            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 5 });
+            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 1 });
             alert("Interview creation Complete!");
             resetForm();
         } catch (error) {

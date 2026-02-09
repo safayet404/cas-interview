@@ -37,19 +37,8 @@ onMounted(() => {
                 You can do this at a time that is convenient for you. Please have your passport ready.
             </p>
 
-            <div
-                class="flex flex-col mt-8 max-w-lg gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl rounded-l-sm border-l-[6px] border-orange-500 shadow-sm">
-                <h2 class="text-lg font-bold">Credibility Interview</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">
-                    You have been asked to complete a recorded video interviews.
-                </p>
-                <RouterLink to="/setup"
-                    class="w-fit px-8 py-2.5 bg-[#0070f3] hover:bg-blue-600 text-white font-semibold rounded-lg transition-all active:scale-95">
-                    Start interview
-                </RouterLink>
-            </div>
 
-            <div class="flex gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div v-for="item in interviews"
                     :class="item.status === 'completed' ? 'border-green-800' : 'border-orange-500'"
                     class="flex flex-col mt-8 max-w-lg gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-r-xl rounded-l-sm border-l-[6px]  shadow-sm">

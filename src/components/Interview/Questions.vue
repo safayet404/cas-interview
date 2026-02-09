@@ -2,9 +2,12 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { CheckCircle2, Square, Video, Loader2 } from 'lucide-vue-next';
 import { useQuestionStore } from '@/stores/questions';
-import { useRouter } from 'vue-router'; // Import router
+import { useRouter } from 'vue-router';
 import { useInterviewStore } from '@/stores/interview';
+
 const qs = useQuestionStore();
+const interview = useInterviewStore();
+const router = useRouter();
 
 // --- State Management ---
 const interviewStarted = ref(false);
@@ -14,7 +17,7 @@ const isRecording = ref(false);
 const isUploading = ref(false);
 const prepTimer = ref(0);
 const recordingTimer = ref(0);
-const router = useRouter(); // Initialize router
+
 // Media Refs
 const videoElement = ref(null);
 const stream = ref(null);
@@ -24,53 +27,52 @@ let timerInterval = null;
 
 const questions = computed(() => qs.questions || []);
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value]);
-const interview = useInterviewStore()
+
 onMounted(async () => {
+    // 1. Fetch questions based on the stored Interview ID
     const data = await qs.fetchQuestionByInterview();
 
-
-
-    // RESUME LOGIC: Find the first question that isn't 'uploaded'
+    // 2. Resume logic: find first pending question
     const firstPending = data.findIndex(q => q.status === 'pending');
     if (firstPending !== -1) {
         currentQuestionIndex.value = firstPending;
     }
 
+    // 3. Start high-quality camera/mic setup
     await setupCamera();
 });
 
 const setupCamera = async () => {
     try {
+        // High-fidelity constraints similar to Google Meet
         stream.value = await navigator.mediaDevices.getUserMedia({
-            video: { width: 1280, height: 720 },
-            audio: true
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 }
+            },
+            audio: {
+                echoCancellation: true, // Filters out speaker noise
+                noiseSuppression: true, // Filters out background hum/fans
+                autoGainControl: true,  // Keeps volume consistent
+                channelCount: 1         // Mono is better for speech-to-text
+            }
         });
+
         if (videoElement.value) {
             videoElement.value.srcObject = stream.value;
         }
     } catch (err) {
-        console.error("Camera access denied:", err);
+        console.error("Hardware access denied:", err);
+        alert("Please allow camera and microphone access to continue.");
     }
 };
 
 const stopMediaTracks = () => {
     if (stream.value) {
-        stream.value.getTracks().forEach(track => {
-            track.stop();
-            console.log(`${track.kind} track stopped`);
-        });
+        stream.value.getTracks().forEach(track => track.stop());
         stream.value = null;
     }
-};
-
-const finishInterview = () => {
-    stopMediaTracks(); // Stop Camera/Mic
-    interviewStarted.value = false;
-    interview.done()
-
-    // Redirect to dashboard
-    router.push('/dashboard');
-
 };
 
 const startInterviewFlow = () => {
@@ -99,13 +101,18 @@ const startRecording = () => {
     recordingTimer.value = currentQuestion.value.answer_seconds;
     recordedChunks = [];
 
-    // Initialize MediaRecorder
-    mediaRecorder = new MediaRecorder(stream.value, { mimeType: 'video/webm' });
-    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    // Use specific options for high-quality Opus audio encoding
+    const options = {
+        mimeType: 'video/webm;codecs=vp8,opus',
+        audioBitsPerSecond: 128000 // 128kbps (high quality)
+    };
 
-    // Automatic upload when recording stops
+    mediaRecorder = new MediaRecorder(stream.value, options);
+    mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
     mediaRecorder.onstop = handleUpload;
-
     mediaRecorder.start(1000);
 
     timerInterval = setInterval(() => {
@@ -129,24 +136,26 @@ const handleUpload = async () => {
     try {
         await qs.uploadVideo(currentQuestion.value.id, blob);
 
-        // Move to next question or finish
+        // Move to next question or FINISH
         if (currentQuestionIndex.value < questions.value.length - 1) {
             currentQuestionIndex.value++;
             startPreparation();
         } else {
+            // ALL QUESTIONS DONE
+            await interview.done(); // Notify backend
+            stopMediaTracks();      // Kill camera
             interviewStarted.value = false;
-            await interview.done()
             router.push('/dashboard');
         }
     } catch (err) {
-        alert("Upload failed. Check internet and try this question again.");
+        alert("Upload failed. Please check your internet connection.");
     } finally {
         isUploading.value = false;
     }
 };
 
 onUnmounted(() => {
-    if (stream.value) stream.value.getTracks().forEach(t => t.stop());
+    stopMediaTracks();
     clearInterval(timerInterval);
 });
 </script>
