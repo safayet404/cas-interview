@@ -12,6 +12,8 @@ import Setup from '@/components/Interview/Setup.vue'
 import Questions from '@/components/Interview/Questions.vue'
 import StudentsList from '@/components/Admin Dashboard/StudentsList.vue'
 import ComplianceList from '@/components/Admin Dashboard/ComplianceList.vue'
+import CreateCompliance from '@/components/Admin Dashboard/CreateCompliance.vue'
+import CreateInterview from '@/components/Admin Dashboard/CreateInterview.vue'
 
 
 const router = createRouter({
@@ -65,6 +67,8 @@ const router = createRouter({
         { path: "create-student", name: "create-student", component: CreateStudent },
         { path: "all-students", name: "all-students", component: StudentsList },
         { path: "all-compliance", name: "all-compliance", component: ComplianceList },
+        { path: "create-interview", name: "create-interview", component: CreateInterview },
+        { path: "create-compliance", name: "create-compliance", component: CreateCompliance },
       ]
     },
 

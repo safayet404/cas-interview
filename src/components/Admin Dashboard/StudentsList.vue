@@ -166,12 +166,12 @@ onMounted(async () => {
                                                 <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
                                                     <p class="text-[10px] text-gray-500 font-bold mb-1">TUITION</p>
                                                     <p class="text-sm font-black text-gray-900">${{ profile.tuition_fee
-                                                        }}</p>
+                                                    }}</p>
                                                 </div>
                                                 <div class="p-3 rounded-xl bg-green-50 border border-green-100">
                                                     <p class="text-[10px] text-green-600 font-bold mb-1">PAID</p>
                                                     <p class="text-sm font-black text-green-700">${{ profile.paid_amount
-                                                        }}</p>
+                                                    }}</p>
                                                 </div>
                                                 <div class="p-3 rounded-xl bg-red-50 border border-red-100">
                                                     <p class="text-[10px] text-red-500 font-bold mb-1">BALANCE</p>
@@ -222,7 +222,7 @@ onMounted(async () => {
                                                 <div
                                                     class="px-5 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
                                                     <h4 class="text-sm font-bold text-gray-700">Interview #{{ index + 1
-                                                        }}</h4>
+                                                    }}</h4>
                                                     <div class="flex items-center gap-3">
                                                         <span class="text-[10px] text-gray-400 font-bold uppercase">{{
                                                             formatLocalTime(interview.created_at) }}</span>

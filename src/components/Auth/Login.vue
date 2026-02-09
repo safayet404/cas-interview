@@ -22,6 +22,10 @@
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                     </div>
 
+                    <div v-if="error">
+                        <p class="text-red-600">{{ error }}</p>
+                    </div>
+
                     <button @click="handleLogin"
                         class="w-full bg-[#5D9CEC] cursor-pointer hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-colors shadow-md mt-2">
                         Log in
@@ -63,8 +67,8 @@ const handleLogin = async () => {
         } else {
             error.value = res.data.message || "login failed"
         }
-    } catch (error) {
-        error.value = "Invalid credentials";
+    } catch (err) {
+        error.value = err.response?.data?.message || "Invalid credentials";
 
     }
 }

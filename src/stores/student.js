@@ -15,8 +15,16 @@ export const useStudentStore = defineStore('student', () => {
     const selectedStudent = ref(null);
     const isDrawerOpen = ref(false);
 
+    function selectExistingStudent(id) {
+        studentId.value = id ?? null;
+    }
+    function selectExistingProfile(id) {
 
+        profileId.value = id ?? null;
+    }
     const students = ref([])
+    const searchStudents = ref([])
+    const searchProfiles = ref([])
     const pagination = ref({
         current_page: 1,
         last_page: 1,
@@ -50,14 +58,21 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
-    async function createProfile() {
+    async function createProfile(forStudentId = null) {
         loading.value.profile = true;
         try {
-            const { data } = await api.post(`/students/${studentId.value}/compliance-profiles`, profile.value);
+            const isManualId = forStudentId && typeof forStudentId !== 'object';
+            const sid = isManualId ? forStudentId : studentId.value;
+            const { data } = await api.post(`/students/${sid}/compliance-profiles`, profile.value);
+            if (forStudentId) {
+                tab.value = "doc";
+            } else {
+                tab.value = "interview";
+            }
             profileId.value = data?.data.id;
-            tab.value = "doc";
+
         } catch (error) {
-            console.error(error);
+            console.error("Profile creation failed:", error);
         } finally {
             loading.value.profile = false;
         }
@@ -69,16 +84,31 @@ export const useStudentStore = defineStore('student', () => {
         });
     }
 
-    async function createInterview() {
+    async function createInterview(forStudentId = null, forProfileId = null) {
         loading.value.interview = true;
         try {
+            const isManualSid = forStudentId && typeof forStudentId !== 'object';
+            const isManualPid = forProfileId && typeof forProfileId !== 'object';
+
+            const sid = isManualSid ? forStudentId : studentId.value;
+            const pid = isManualPid ? forProfileId : profileId.value;
+
+
+            if (!sid || !pid) {
+                alert("Missing Student or Profile ID");
+                return;
+            }
+
             const { data } = await api.post('/interviews', {
-                student_id: studentId.value,
-                compliance_profile_id: profileId.value,
+                student_id: sid,
+                compliance_profile_id: pid,
             });
+
             interviewId.value = data?.data.id;
+
+
         } catch (error) {
-            console.error(error);
+            console.error("Interview Creation Error:", error);
         } finally {
             loading.value.interview = false;
         }
@@ -87,7 +117,7 @@ export const useStudentStore = defineStore('student', () => {
     async function generateQuestions() {
         loading.value.generateQuestion = true;
         try {
-            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 5 });
+            const { data } = await api.post(`/interviews/${interviewId.value}/generate-questions`, { count: 1 });
             alert("Interview creation Complete!");
             resetForm();
         } catch (error) {
@@ -123,6 +153,35 @@ export const useStudentStore = defineStore('student', () => {
         }
     }
 
+    async function searchStudent() {
+        isFetching.value = true;
+        try {
+            const { data } = await api.get('/students', {
+            });
+            searchStudents.value = data.data;
+            return data;
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            isFetching.value = false;
+        }
+    }
+
+    async function searchProfile() {
+        isFetching.value = true;
+        try {
+            const { data } = await api.get('/profiles', {
+
+            });
+            searchProfiles.value = data.data;
+            return data;
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        } finally {
+            isFetching.value = false;
+        }
+    }
+
 
 
     function resetForm() {
@@ -136,7 +195,7 @@ export const useStudentStore = defineStore('student', () => {
     }
 
     return {
-        student, profile, studentId, profileId, interviewId, docUploaded, tab, loading, students, pagination, isFetching, selectedStudent, isDrawerOpen,
-        createStudent, createProfile, uploadDocumentAction, createInterview, generateQuestions, resetForm, fetchStudents, closeDrawer, openStudentDrawer
+        student, profile, studentId, profileId, interviewId, searchStudents, docUploaded, tab, loading, students, pagination, isFetching, selectedStudent, isDrawerOpen, searchProfiles,
+        createStudent, createProfile, uploadDocumentAction, createInterview, searchStudent, generateQuestions, resetForm, fetchStudents, closeDrawer, openStudentDrawer, selectExistingProfile, selectExistingStudent, searchProfile
     };
 });
