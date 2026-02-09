@@ -162,7 +162,7 @@ onMounted(async () => {
                                                 }}</p>
                                             <p class="text-gray-900 font-bold text-sm leading-snug">{{
                                                 selectedProfile[key]
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                     </div>
                                     <div
@@ -171,7 +171,7 @@ onMounted(async () => {
                                             <p class="text-[10px] text-gray-400 font-black mb-1 uppercase">Tuition Fee
                                             </p>
                                             <p class="text-xl font-black text-gray-900">${{ selectedProfile.tuition_fee
-                                            }}
+                                                }}
                                             </p>
                                         </div>
                                         <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
@@ -179,7 +179,7 @@ onMounted(async () => {
                                             </p>
                                             <p class="text-xl font-black text-emerald-700">${{
                                                 selectedProfile.paid_amount
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                         <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
                                             <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">
@@ -187,14 +187,14 @@ onMounted(async () => {
                                             </p>
                                             <p class="text-xl font-black text-emerald-700">${{
                                                 selectedProfile.scholarship
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                         <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100">
                                             <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance Due
                                             </p>
                                             <p class="text-xl font-black text-rose-700">${{
                                                 selectedProfile.remaining_amount
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -381,7 +381,7 @@ onMounted(async () => {
     transition: opacity 0.3s ease, transform 0.3s ease-out;
 }
 
-.tab-enter-from {
+/* .tab-enter-from {
     opacity: 0;
     transform: translateX(15px);
 }
@@ -389,6 +389,11 @@ onMounted(async () => {
 .tab-leave-to {
     opacity: 0;
     transform: translateX(-15px);
+} */
+
+.tab-enter-from,
+.tab-leave-to {
+    transform: translateX(100%);
 }
 
 .slide-enter-active,
