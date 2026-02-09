@@ -1,13 +1,20 @@
 <script setup>
 import { useInterviewStore } from '@/stores/interview';
+import { useQuestionStore } from '@/stores/questions';
 import { ArrowLeft } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { onMounted } from 'vue';
-
+import { useRouter } from 'vue-router';
+const router = useRouter()
 const store = useInterviewStore()
-
+const qs = useQuestionStore()
 const { interviews } = storeToRefs(store)
 const { fetchInterviewPerStudent } = store
+
+const hadnleStart = (interviewId) => {
+    qs.setInterviewId(interviewId)
+    router.push('/setup');
+}
 
 onMounted(() => {
     fetchInterviewPerStudent()
@@ -51,14 +58,15 @@ onMounted(() => {
                         {{ item.compliance_profile?.program }} - {{ item.compliance_profile?.intake }}
                     </p>
 
-                    <RouterLink :to="item.status === 'ready' ? '/setup' : ''"
+                    <button @click="hadnleStart(item.id)"
+                        :disabled="item.status !== 'ready' && item.status !== 'completed'"
                         class="w-fit px-8 py-2.5 capitalize font-semibold rounded-lg transition-all" :class="{
-                            'bg-[#0070f3] hover:bg-blue-600 text-white active:scale-95': item.status === 'ready',
-                            'bg-green-600 text-white cursor-default': item.status === 'completed',
-                            'bg-gray-400 text-gray-200 cursor-not-allowed pointer-events-none': item.status !== 'ready' && item.status !== 'completed'
+                            'bg-[#0070f3] hover:bg-blue-600 cursor-pointer text-white active:scale-95': item.status === 'ready',
+                            'bg-green-600 text-white cursor-not-allowed': item.status === 'completed',
+                            'bg-gray-400 text-gray-200 cursor-not-allowed': item.status !== 'ready' && item.status !== 'completed'
                         }">
                         {{ item.status === "ready" ? "Start Interview" : item.status }}
-                    </RouterLink>
+                    </button>
                 </div>
 
             </div>

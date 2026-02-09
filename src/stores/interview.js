@@ -2,6 +2,7 @@ import api from "@/services/api";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useAuthStore } from "./auth";
+import { useQuestionStore } from "./questions";
 
 export const useInterviewStore = defineStore('interview', () => {
 
@@ -20,9 +21,20 @@ export const useInterviewStore = defineStore('interview', () => {
 
         }
     }
+    async function done() {
+        const interview = useQuestionStore()
+        try {
+            const id = interview.currentInterviewId ?? []
+            await api.post(`interviews/${id}/done`);
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 
     return {
         interviews,
-        fetchInterviewPerStudent
+        fetchInterviewPerStudent, done
     };
 });

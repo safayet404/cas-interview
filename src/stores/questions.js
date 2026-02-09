@@ -7,10 +7,14 @@ export const useQuestionStore = defineStore("question", {
         questions: [],
         loading: false,
         error: null,
-        interviewStatus: ''
+        interviewStatus: '',
+        currentInterviewId: null
     }),
 
     actions: {
+        setInterviewId(id) {
+            this.currentInterviewId = id
+        },
         async fetchQuestions() {
             const authStore = useAuthStore()
             this.loading = true
@@ -20,6 +24,26 @@ export const useQuestionStore = defineStore("question", {
                 if (!id) return []
 
                 const response = await api.get(`interview-questions/${id}`)
+                this.questions = response.data.data
+                this.interviewStatus = response.data.interview_status
+
+                return this.questions
+            } catch (error) {
+                this.error = error.response?.data?.message || "Failed to load questions"
+                return []
+            } finally {
+                this.loading = false
+            }
+        },
+        async fetchQuestionByInterview() {
+            const authStore = useAuthStore()
+            this.loading = true
+            this.error = null
+            try {
+                const id = this.currentInterviewId
+                if (!id) return []
+
+                const response = await api.get(`questions-by-interview/${id}`)
                 this.questions = response.data.data
                 this.interviewStatus = response.data.interview_status
 

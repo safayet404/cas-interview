@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { CheckCircle2, Square, Video, Loader2 } from 'lucide-vue-next';
 import { useQuestionStore } from '@/stores/questions';
 import { useRouter } from 'vue-router'; // Import router
+import { useInterviewStore } from '@/stores/interview';
 const qs = useQuestionStore();
 
 // --- State Management ---
@@ -23,9 +24,11 @@ let timerInterval = null;
 
 const questions = computed(() => qs.questions || []);
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value]);
-
+const interview = useInterviewStore()
 onMounted(async () => {
-    const data = await qs.fetchQuestions();
+    const data = await qs.fetchQuestionByInterview();
+
+
 
     // RESUME LOGIC: Find the first question that isn't 'uploaded'
     const firstPending = data.findIndex(q => q.status === 'pending');
@@ -63,9 +66,11 @@ const stopMediaTracks = () => {
 const finishInterview = () => {
     stopMediaTracks(); // Stop Camera/Mic
     interviewStarted.value = false;
+    interview.done()
 
     // Redirect to dashboard
     router.push('/dashboard');
+
 };
 
 const startInterviewFlow = () => {
@@ -130,6 +135,7 @@ const handleUpload = async () => {
             startPreparation();
         } else {
             interviewStarted.value = false;
+            await interview.done()
             router.push('/dashboard');
         }
     } catch (err) {
