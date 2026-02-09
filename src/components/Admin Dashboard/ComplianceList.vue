@@ -48,7 +48,7 @@ onMounted(async () => {
     <div class="min-h-screen bg-[#F8F7FA] p-4 font-sans">
         <GlobalLoader v-if="isFetching" />
 
-        <div class="max-w-(--突破-7xl) mx-auto">
+        <div class=" mx-auto">
             <div class="flex gap-5 justify-end mb-6">
                 <div class="p-5 bg-linear-to-br from-green-800 to-green-400 text-white rounded-2xl shadow-lg min-w-50">
                     <p class="text-[10px] uppercase font-black tracking-widest opacity-80">Total Cases</p>
@@ -149,126 +149,145 @@ onMounted(async () => {
                     </div>
 
                     <div class="flex-1 overflow-y-auto p-8 bg-gray-50/40">
-                        <div v-if="activeTab === 'profile'" class="space-y-6">
-                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                    <div v-for="(label, key) in { institution: 'Institution', program: 'Program', intake: 'Intake Period', counselor_name: 'Assigned Counselor' }"
-                                        :key="key">
-                                        <p class="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">
-                                            {{ label
-                                            }}</p>
-                                        <p class="text-gray-900 font-bold text-sm leading-snug">{{ selectedProfile[key]
-                                            }}</p>
-                                    </div>
-                                </div>
-                                <div class="mt-10 pt-8 border-t border-gray-50 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div class="p-5 rounded-2xl bg-gray-50 border border-gray-100">
-                                        <p class="text-[10px] text-gray-400 font-black mb-1 uppercase">Tuition Fee</p>
-                                        <p class="text-xl font-black text-gray-900">${{ selectedProfile.tuition_fee }}
-                                        </p>
-                                    </div>
-                                    <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
-                                        <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">Total Paid</p>
-                                        <p class="text-xl font-black text-emerald-700">${{ selectedProfile.paid_amount
-                                            }}</p>
-                                    </div>
-                                    <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
-                                        <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">Scholarship
-                                        </p>
-                                        <p class="text-xl font-black text-emerald-700">${{ selectedProfile.scholarship
-                                        }}</p>
-                                    </div>
-                                    <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100">
-                                        <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance Due</p>
-                                        <p class="text-xl font-black text-rose-700">${{ selectedProfile.remaining_amount
-                                            }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div v-if="activeTab === 'documents'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div v-for="doc in selectedProfile?.documents" :key="doc.id"
-                                class="flex items-center p-5 bg-white rounded-2xl border border-gray-100 hover:border-indigo-300 group shadow-sm transition-all">
-                                <div
-                                    class="p-4 bg-indigo-50 text-indigo-600 rounded-xl mr-4 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                    <FileText :size="28" />
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-gray-800 truncate">{{ doc.file_name }}</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">{{ doc.file_size }} • {{
-                                        formatLocalTime(doc.uploaded_at) }}</p>
-                                </div>
-                                <button @click="openPreview(doc.url, doc.file_type)"
-                                    class="ml-2 px-4 cursor-pointer py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">View</button>
-                            </div>
-                        </div>
-
-                        <div v-if="activeTab === 'interviews'" class="space-y-10">
-                            <div v-if="!selectedProfile?.interviews?.length"
-                                class="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-100">
-                                <Info class="text-gray-200 mx-auto mb-4" :size="48" />
-                                <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">No Sessions
-                                    Recorded</p>
-                            </div>
-                            <div v-for="(interview, index) in selectedProfile?.interviews" :key="interview.interview_id"
-                                class="relative pl-10 border-l-2 border-indigo-100 pb-2">
-                                <div
-                                    class="absolute -left-2.75 top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
-                                </div>
-                                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                        <Transition name="tab" mode="out-in">
+                            <div v-if="activeTab === 'profile'" class="space-y-6">
+                                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                        <div v-for="(label, key) in { institution: 'Institution', program: 'Program', intake: 'Intake Period', counselor_name: 'Assigned Counselor' }"
+                                            :key="key">
+                                            <p
+                                                class="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">
+                                                {{ label
+                                                }}</p>
+                                            <p class="text-gray-900 font-bold text-sm leading-snug">{{
+                                                selectedProfile[key]
+                                            }}</p>
+                                        </div>
+                                    </div>
                                     <div
-                                        class="px-6 py-4 bg-gray-50/80 border-b border-gray-100 flex justify-between items-center">
-                                        <h4 class="text-xs font-black text-indigo-900 uppercase tracking-widest">Session
-                                            #{{
-                                                index + 1 }}</h4>
-                                        <button v-if="interview.report_path"
-                                            @click="openPreview(interview.report_path, 'application/pdf')"
-                                            class="flex items-center cursor-pointer gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all">
-                                            <Eye :size="12" /> View Report
-                                        </button>
-                                        <span
-                                            :class="[interview.status === 'ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700', 'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter']">{{
-                                                interview.status }}</span>
+                                        class="mt-10 pt-8 border-t border-gray-50 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="p-5 rounded-2xl bg-gray-50 border border-gray-100">
+                                            <p class="text-[10px] text-gray-400 font-black mb-1 uppercase">Tuition Fee
+                                            </p>
+                                            <p class="text-xl font-black text-gray-900">${{ selectedProfile.tuition_fee
+                                            }}
+                                            </p>
+                                        </div>
+                                        <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
+                                            <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">Total Paid
+                                            </p>
+                                            <p class="text-xl font-black text-emerald-700">${{
+                                                selectedProfile.paid_amount
+                                            }}</p>
+                                        </div>
+                                        <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
+                                            <p class="text-[10px] text-emerald-600 font-black mb-1 uppercase">
+                                                Scholarship
+                                            </p>
+                                            <p class="text-xl font-black text-emerald-700">${{
+                                                selectedProfile.scholarship
+                                            }}</p>
+                                        </div>
+                                        <div class="p-5 rounded-2xl bg-rose-50 border border-rose-100">
+                                            <p class="text-[10px] text-rose-500 font-black mb-1 uppercase">Balance Due
+                                            </p>
+                                            <p class="text-xl font-black text-rose-700">${{
+                                                selectedProfile.remaining_amount
+                                            }}</p>
+                                        </div>
                                     </div>
-                                    <div class="p-6 space-y-8">
-                                        <div v-for="(q, qIndex) in interview.questions" :key="q.question_id">
-                                            <div class="flex gap-5">
-                                                <div
-                                                    class="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black">
-                                                    {{ qIndex + 1 }}</div>
-                                                <div class="flex-1">
-                                                    <h5 class="text-sm text-gray-800 font-bold mb-2">{{ q.text }}</h5>
-                                                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-4">
-                                                        <p class="text-sm text-gray-600 italic">{{ q?.transcript }} </p>
-                                                    </div>
-                                                    <div v-if="q.status === 'completed'"
-                                                        class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                </div>
+                            </div>
+
+                            <div v-else-if="activeTab === 'documents'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div v-for="doc in selectedProfile?.documents" :key="doc.id"
+                                    class="flex items-center p-5 bg-white rounded-2xl border border-gray-100 hover:border-indigo-300 group shadow-sm transition-all">
+                                    <div
+                                        class="p-4 bg-indigo-50 text-indigo-600 rounded-xl mr-4 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                        <FileText :size="28" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-bold text-gray-800 truncate">{{ doc.file_name }}</p>
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ doc.file_size }} • {{
+                                            formatLocalTime(doc.uploaded_at) }}</p>
+                                    </div>
+                                    <button @click="openPreview(doc.url, doc.file_type)"
+                                        class="ml-2 px-4 cursor-pointer py-2 bg-gray-50 text-indigo-600 text-[11px] font-black uppercase rounded-lg hover:bg-indigo-600 hover:text-white transition-all">View</button>
+                                </div>
+                            </div>
+
+                            <div v-else class="space-y-10">
+                                <div v-if="!selectedProfile?.interviews?.length"
+                                    class="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                                    <Info class="text-gray-200 mx-auto mb-4" :size="48" />
+                                    <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">No Sessions
+                                        Recorded</p>
+                                </div>
+                                <div v-for="(interview, index) in selectedProfile?.interviews"
+                                    :key="interview.interview_id"
+                                    class="relative pl-10 border-l-2 border-indigo-100 pb-2">
+                                    <div
+                                        class="absolute -left-2.75 top-0 w-5 h-5 rounded-full bg-indigo-600 border-4 border-white shadow-md">
+                                    </div>
+                                    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                                        <div
+                                            class="px-6 py-4 bg-gray-50/80 border-b border-gray-100 flex justify-between items-center">
+                                            <h4 class="text-xs font-black text-indigo-900 uppercase tracking-widest">
+                                                Session
+                                                #{{
+                                                    index + 1 }}</h4>
+                                            <button v-if="interview.report_path"
+                                                @click="openPreview(interview.report_path, 'application/pdf')"
+                                                class="flex items-center cursor-pointer gap-1.5 px-3 py-1 bg-white border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all">
+                                                <Eye :size="12" /> View Report
+                                            </button>
+                                            <span
+                                                :class="[interview.status === 'ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700', 'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter']">{{
+                                                    interview.status }}</span>
+                                        </div>
+                                        <div class="p-6 space-y-8">
+                                            <div v-for="(q, qIndex) in interview.questions" :key="q.question_id">
+                                                <div class="flex gap-5">
+                                                    <div
+                                                        class="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black">
+                                                        {{ qIndex + 1 }}</div>
+                                                    <div class="flex-1">
+                                                        <h5 class="text-sm text-gray-800 font-bold mb-2">{{ q.text }}
+                                                        </h5>
                                                         <div
-                                                            class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                                                            <p
-                                                                class="text-[10px] uppercase font-black text-indigo-600 mb-3 tracking-widest flex items-center gap-2">
-                                                                <CheckCheck :size="14" /> AI Observations
+                                                            class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-4">
+                                                            <p class="text-sm text-gray-600 italic">{{ q?.transcript }}
                                                             </p>
-                                                            <ul class="space-y-1">
-                                                                <li v-for="point in q.summary" :key="point"
-                                                                    class="text-xs text-gray-600">• {{ point }}</li>
-                                                            </ul>
                                                         </div>
-                                                        <div
-                                                            class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                                                            <div class="flex justify-between items-center mb-3">
+                                                        <div v-if="q.status === 'completed'"
+                                                            class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div
+                                                                class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
                                                                 <p
-                                                                    class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
-                                                                    Consistency</p><span
-                                                                    :class="q.consistency === 'concerning' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'"
-                                                                    class="px-2 py-0.5 rounded text-[10px] font-black uppercase">{{
-                                                                        q.consistency }}</span>
+                                                                    class="text-[10px] uppercase font-black text-indigo-600 mb-3 tracking-widest flex items-center gap-2">
+                                                                    <CheckCheck :size="14" /> AI Observations
+                                                                </p>
+                                                                <ul class="space-y-1">
+                                                                    <li v-for="point in q.summary" :key="point"
+                                                                        class="text-xs text-gray-600">• {{ point }}</li>
+                                                                </ul>
                                                             </div>
-                                                            <div class="flex flex-wrap gap-2 mt-4"><span
-                                                                    v-for="kp in q.key_points" :key="kp"
-                                                                    class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-medium">{{
-                                                                        kp }}</span></div>
+                                                            <div
+                                                                class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                                                                <div class="flex justify-between items-center mb-3">
+                                                                    <p
+                                                                        class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
+                                                                        Consistency</p><span
+                                                                        :class="q.consistency === 'concerning' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'"
+                                                                        class="px-2 py-0.5 rounded text-[10px] font-black uppercase">{{
+                                                                            q.consistency }}</span>
+                                                                </div>
+                                                                <div class="flex flex-wrap gap-2 mt-4"><span
+                                                                        v-for="kp in q.key_points" :key="kp"
+                                                                        class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-medium">{{
+                                                                            kp }}</span></div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -277,7 +296,11 @@ onMounted(async () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+
+                        </Transition>
+
+
+
                     </div>
                 </div>
             </Transition>
@@ -351,6 +374,21 @@ onMounted(async () => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+.tab-enter-active,
+.tab-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease-out;
+}
+
+.tab-enter-from {
+    opacity: 0;
+    transform: translateX(15px);
+}
+
+.tab-leave-to {
+    opacity: 0;
+    transform: translateX(-15px);
 }
 
 .slide-enter-active,
